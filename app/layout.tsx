@@ -21,7 +21,8 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${jost.className} dark:bg-dark_2 antialiased dark`}
+            style={jost.style}
+                className={`dark:bg-dark_2 antialiased dark`}
             >
                 <QueryProvider>
                     {children}

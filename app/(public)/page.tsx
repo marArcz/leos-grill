@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Navbar from "../ui/Navbar";
 import Link from "next/link";
