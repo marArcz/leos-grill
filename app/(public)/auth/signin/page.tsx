@@ -22,7 +22,8 @@ const SignInPage = () => {
         resolver: zodResolver(SigninFormSchema),
         defaultValues: {
             email: '',
-            password: ''
+            password: '',
+            role:'customer'
         }
     })
 
@@ -59,7 +60,7 @@ const SignInPage = () => {
                                         <FormItem>
                                             <FormLabel>Email Address</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Email Address" {...field} />
+                                                <Input required placeholder="Email Address" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -74,7 +75,7 @@ const SignInPage = () => {
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input type="password" placeholder="Password" {...field} />
+                                                <Input required type="password" placeholder="Password" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

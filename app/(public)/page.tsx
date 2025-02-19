@@ -16,12 +16,12 @@ export default async function Home() {
 
     return (
         <>
-            <section className="hero-section h-[80vh] wrapper w-full bg-bottom bg-hero bg-cover">
+            <section className="hero-section h-[80vh] wrapper w-full bg-top bg-hero bg-cover">
                 <div className="flex flex-col h-full w-full justify-center items-center gap-14">
                     <p className="text-gray-700 text-lg dark:text-gray-300">Barangay kililihan, San Miguel</p>
                     <Link href="/menu" className="btn py-4 px-5 font-medium text-lg bg-yellow rounded-full text-black">Explore Menu</Link>
-                    <h1 className={`md:text-5xl lg:text-6xl text-5xl dark:text-gray-200 text-gray-900`} style={jotiOne.style}>Leo’s Grill</h1>
-                    <p className="text-center md:text-2xl text-lg dark:text-gray-300 text-black w-full">
+                    <h1 className={`md:text-6xl mt-10 lg:text-8xl text-5xl dark:text-gray-200 text-gray-900`} style={jotiOne.style}>Leo’s Grill</h1>
+                    <p className="text-center md:text-2xl mt-1 text-lg dark:text-gray-300 text-black w-full">
                         Lorem ipsum odor amet, consectetuer adipiscing elit. Maximus morbi quam posuere sodales leo lobortis cubilia. Sed metus posuere mollis montes congue suspendisse. Parturient mi curae vehicula fermentum ipsum ligula augue feugiat. Tincidunt eleifend nisi nisl tempor odio quis.
                     </p> 
                 </div>

@@ -14,4 +14,5 @@ export enum QUERY_KEYS {
     GET_CATEGORIES = 'getCategories',
     
     GET_PRODUCTS = 'getProducts',
+    GET_PRODUCT_BY_ID = 'getProductById',
   } 

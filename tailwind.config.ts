@@ -60,7 +60,7 @@ const config: Config = {
 				}
 			},
 			backgroundImage: {
-				'hero': "linear-gradient(rgb(27, 27, 27) 0%, rgba(27, 27, 27, 0.6) 60%, rgb(27, 27, 27) 98%),url('/images/hero-bg.jpg')"
+				'hero': "linear-gradient(rgba(27, 27, 27,1) 0%, rgba(27, 27, 27, 0.6) 60%, rgb(27, 27, 27) 100%),url('/images/hero-bg.jpg')"
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

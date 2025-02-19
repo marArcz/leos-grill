@@ -5,6 +5,7 @@ import { jost } from "./ui/fonts";
 import theme from "./lib/theme";
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryProvider } from "./lib/react-query/QueryProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
     title: "Leo's Grill",
@@ -26,6 +27,7 @@ export default function RootLayout({
             >
                 <QueryProvider>
                     {children}
+                    <Toaster />
                 </QueryProvider>
             </body>
         </html>

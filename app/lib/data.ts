@@ -47,3 +47,34 @@ export const fetchCart = async (count: number = 10, start: number = 0): Promise<
 
     return data as CartItemWithProduct[];
 }
+
+export const updateCartItem = async (cartItem:Tables<'cart_items'>):Promise<CartItemWithProduct | null> => {
+    console.log('cartItem: ', cartItem)
+    const supabase = createClient()
+
+    const {data, error} = await supabase.from('cart_items').update({
+        quantity:cartItem.quantity
+    })
+    .eq('id',cartItem.id)
+    .select('*, product:products(*)');
+
+    if(error){
+        console.log('ERROR UPDATING CART: ', error)
+        throw error;
+    }
+    console.log('SUccess: ', data)
+    return data[0];
+}
+
+export const removeCartItem = async (id:number) => {
+    const supabase = createClient();
+
+    const {error} = await supabase.from('cart_items')
+        .delete()
+        .eq('id',id);
+
+        if(error){
+            console.error(error);
+            throw error;
+        }
+}
