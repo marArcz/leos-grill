@@ -36,7 +36,10 @@ export const fetchCategories = async () => {
 
 export const fetchCart = async (count: number = 10, start: number = 0): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
-    let { data, error } = await supabase.from('cart_items').select('*, product:products(*)').range(start, start + count);
+    let { data, error } = await supabase.from('cart_items')
+        .select('*, product:products(*)')
+        .order('created_at')
+        .range(start, start + count);
     console.log('fetched cart: ', data);
 
 

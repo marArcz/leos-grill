@@ -17,6 +17,16 @@ const CartPage = () => {
     const { mutateAsync: updateCartItem, isPending: isLoadingUpdateCartItem } = useUpdateCartItem();
     const { mutateAsync: removeCartItem, isPending: isLoadingRemoveCartItem } = useRemoveCartItem();
 
+    const getTotal = () => {
+        if (cartItems) {
+            let total = 0;
+            for (let item of cartItems) {
+                total += (item.product?.price ?? 0) * item.quantity
+            }
+            return total;
+        }
+        return 0;
+    }
     const updateQuantity = async (cartItem: Tables<'cart_items'>, action = 'up') => {
         let item;
         if (action == 'up') {
@@ -24,15 +34,17 @@ const CartPage = () => {
         } else {
             item = { ...cartItem, quantity: (cartItem.quantity || 1) - 1 };
         }
-
         const updatedCartItem = await updateCartItem(item);
-
         if (!updatedCartItem) {
             toast({ title: 'Please try again later!' })
         } else {
             toast({ title: 'Success!' })
             refetchCartItems()
         }
+    }
+
+    const onRemoveItem = (id:number) => {
+        
     }
 
     return (
@@ -74,8 +86,8 @@ const CartPage = () => {
                                             <p>{formatToCurrency((cartItem.product?.price || 0) * (cartItem.quantity))}</p>
                                         </div>
                                         <div>
-                                            <button className=''>
-                                                <Close />
+                                            <button className='' onClick={() => removeCartItem(cartItem.id)}>
+                                                <Close  />
                                             </button>
                                         </div>
                                     </div>
@@ -83,6 +95,10 @@ const CartPage = () => {
                             </div>
                             <div className="mt-8">
                                 <h4 className='text-2xl font-bold'>Cart Totals</h4>
+                                <div className="mt-3 text-lg flex w-1/3 justify-between">
+                                    <p className='text-yellow font-medium'>Total</p>
+                                    <p className='text-yellow font-medium'>{formatToCurrency(getTotal())}</p>
+                                </div>
                             </div>
                         </>
                     ) : (
