@@ -68,10 +68,27 @@ export const SigninFormSchema = z.object({
         .email({ message: "Please enter a valid email address." }),
     password: z
         .string(),
-    role:z.
+    role: z.
         string()
 })
 
+export const DeliveryInformationSchema = z.object({
+    firstname: z
+        .string(),
+    lastname: z
+        .string(),
+    email:z
+        .string()
+        .email(),
+    street:z
+        .string(),
+    city:z
+        .string(),
+    barangay:z 
+        .string(),
+    phone:z
+        .number()
+})
 
 
 export interface IUserInformation {

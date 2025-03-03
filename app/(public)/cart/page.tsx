@@ -8,6 +8,7 @@ import { formatToCurrency } from '@/app/lib/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Add, ShoppingBag, Remove, Delete, Close } from '@mui/icons-material'
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
 const CartPage = () => {
@@ -43,8 +44,10 @@ const CartPage = () => {
         }
     }
 
-    const onRemoveItem = (id:number) => {
-        
+    const onRemoveItem = async (id: number) => {
+        await removeCartItem(id)
+        toast({ title: 'Successfully removed!' });
+        refetchCartItems();
     }
 
     return (
@@ -86,8 +89,8 @@ const CartPage = () => {
                                             <p>{formatToCurrency((cartItem.product?.price || 0) * (cartItem.quantity))}</p>
                                         </div>
                                         <div>
-                                            <button className='' onClick={() => removeCartItem(cartItem.id)}>
-                                                <Close  />
+                                            <button className='' onClick={() => onRemoveItem(cartItem.id)}>
+                                                <Close />
                                             </button>
                                         </div>
                                     </div>
@@ -99,10 +102,17 @@ const CartPage = () => {
                                     <p className='text-yellow font-medium'>Total</p>
                                     <p className='text-yellow font-medium'>{formatToCurrency(getTotal())}</p>
                                 </div>
+                                <div className="mt-8">
+                                    <Link href="/checkout" className='btn bg-orange px-4 py-3 uppercase rounded-md'>Proceed to checkout</Link>
+                                </div>
                             </div>
                         </>
                     ) : (
-                        <p>Cart is empty.</p>
+                        <>
+                            <div className="text-center mt-4">
+                                <p className='text-gray-400 text-xl'>Your cart is empty.</p>
+                            </div>
+                        </>
                     )}
                 </>
             )}
