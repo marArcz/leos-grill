@@ -75,6 +75,8 @@ export const SigninFormSchema = z.object({
 export const DeliveryInformationSchema = z.object({
     firstname: z
         .string(),
+    middlename: z
+        .string(),
     lastname: z
         .string(),
     email:z
@@ -87,7 +89,10 @@ export const DeliveryInformationSchema = z.object({
     barangay:z 
         .string(),
     phone:z
+        .string(),
+    user_id:z
         .number()
+        .nullable(),
 })
 
 
