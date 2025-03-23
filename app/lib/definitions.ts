@@ -91,8 +91,7 @@ export const DeliveryInformationSchema = z.object({
     phone:z
         .string(),
     user_id:z
-        .number()
-        .nullable(),
+        .string()
 })
 
 

@@ -17,13 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Session, User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
+import { useGetAllCartItems } from '../lib/react-query/queriesAndMutations'
 
 const Navbar = ({ filled = false }) => {
-    const [user, setUser] = useState<User | null>(null)
     const [session, setSession] = useState<Session | null>(null)
     const router = useRouter();
     const supabase = createClient()
-
+    const { data: cartItems, isPending:cartItemsLoading } = useGetAllCartItems();
     useEffect(() => {
         // Check initial session
         const getSession = async () => {
@@ -82,8 +82,11 @@ const Navbar = ({ filled = false }) => {
                     {session?.user ? (
                         <>
                             <li>
-                                <Link className="nav-link " href='/cart'>
+                                <Link className="nav-link relative" href='/cart'>
                                     <ShoppingBag className='text-primary' />
+                                    {cartItems && (
+                                        <span className='bg-yellow text-white px-1 w-fit h-fit text-center absolute text-sm rounded-md font-medium'>{cartItems.length}</span>
+                                    )}
                                 </Link>
                             </li>
                             <li>

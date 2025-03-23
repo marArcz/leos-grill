@@ -60,7 +60,7 @@ export type Database = {
           {
             foreignKeyName: "cart_items_product_id_fkey"
             columns: ["product_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -121,7 +121,7 @@ export type Database = {
           id: number
           lastname: string | null
           middlename: string | null
-          phone: number | null
+          phone: string | null
           street: string | null
           user_id: string | null
         }
@@ -134,7 +134,7 @@ export type Database = {
           id?: number
           lastname?: string | null
           middlename?: string | null
-          phone?: number | null
+          phone?: string | null
           street?: string | null
           user_id?: string | null
         }
@@ -147,7 +147,7 @@ export type Database = {
           id?: number
           lastname?: string | null
           middlename?: string | null
-          phone?: number | null
+          phone?: string | null
           street?: string | null
           user_id?: string | null
         }

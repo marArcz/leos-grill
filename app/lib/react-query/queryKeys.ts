@@ -15,4 +15,5 @@ export enum QUERY_KEYS {
     
     GET_PRODUCTS = 'getProducts',
     GET_PRODUCT_BY_ID = 'getProductById',
+    GET_DELIVERY_INFORMATIONS = 'getDeliveryInformations',
   } 

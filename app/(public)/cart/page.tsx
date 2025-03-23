@@ -22,7 +22,7 @@ const CartPage = () => {
         if (cartItems) {
             let total = 0;
             for (let item of cartItems) {
-                total += (item.product?.price ?? 0) * item.quantity
+                total += (item.product?.price ?? 0) * (item.quantity ?? 0)
             }
             return total;
         }

@@ -56,7 +56,7 @@ const SignInPage = () => {
                                 <FormField
                                     control={form.control}
                                     name="email"
-                                    render={({ field }) => (
+                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Email Address</FormLabel>
                                             <FormControl>
