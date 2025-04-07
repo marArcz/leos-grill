@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import DeliveryInformationForm from '../components/DeliveryInformationForm';
 import { useGetAllCartItems, useGetDeliveryInfos } from '@/app/lib/react-query/queriesAndMutations';
-import { formatToCurrency } from '@/app/lib/utils';
+import { formatToCurrency, generateOrderNumber } from '@/app/lib/utils';
 import Link from 'next/link';
 import { useGetSession } from '@/hooks/use-get-session';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -17,17 +17,26 @@ import clsx from 'clsx';
 import PrimaryBtn from '@/components/ui/primary-button';
 import { Pencil, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { createOrder } from '@/app/lib/data';
+import { OrderStatus } from '@/app/lib/order-status';
 
 const CheckoutPage = () => {
     const { data: cartItems } = useGetAllCartItems();
-    const [deliveryInfoId, setDeliveryInfoId] = useState<Number | null>(null)
+    const [deliveryInfoId, setDeliveryInfoId] = useState<number | null>(null)
     const [cartTotal, setCartTotal] = useState(0)
     const [deliveryFee, setDeliveryFee] = useState(30);
+    const [paymentMethod, setPaymentMethod] = useState<string>('cod');
     const [grandTotal, setGrandTotal] = useState(0)
     const [showDeliveryInfoDialog, setShowDeliveryInfoDialog] = useState(false)
     const session = useGetSession();
     const { data: deliveryInfos, isPending: fetchingDeliveryInfos, refetch: refetchDeliveryInfos } = useGetDeliveryInfos(session?.user.id || null)
+    const { toast } = useToast();
 
+    const router = useRouter()
     // compute subtotal
     useEffect(() => {
         if (cartItems) {
@@ -52,10 +61,61 @@ const CheckoutPage = () => {
         }
     }
 
+    const onProceed = async () => {
+        if (!deliveryInfoId) {
+            toast({
+                title: 'Please select your delivery information'
+            })
+        }
+        else if (!paymentMethod) {
+            toast({
+                title: 'Please select your payment method'
+            })
+        }
+        else {
+            // on proceed
+            if (session?.user.id) {
+                try {
+                    console.log('creating order')
+                    const data = await createOrder({
+                        order_number: generateOrderNumber(),
+                        user_id: session?.user.id,
+                        status: OrderStatus.Pending,
+                        is_cancelled: false,
+                        total: grandTotal,
+                        payment_method: paymentMethod,
+                        ordered_at: (new Date()).toDateString(),
+                        delivery_information_id: deliveryInfoId
+                    })
+                    if (data) {
+                        if (paymentMethod == 'cod') {
+                            router.push(`/orders/${data.id}`)
+                        } else {
+                            router.push(`/payment?deliveryInfo=${deliveryInfoId}`)
+                        }
+                    }else{
+                        console.log('not created: ', data)
+                    }
+                } catch (error) {
+                    console.log('Error in creating order: ', error)
+                    toast({
+                        variant: 'destructive',
+                        title: 'Oh no something went wrong please try again later!'
+                    })
+                }
+            }else{
+                toast({
+                    variant: 'destructive',
+                    title: 'You are not signed in!'
+                })
+            }
+        }
+    }
+
 
     return (
         <div className='wrapper pt-10'>
-            <div className="flex gap-8">
+            <div className="flex lg:flex-row flex-col gap-8">
                 <div className="md:w-1/2 w-full">
                     <h2 className='font-bold text-2xl'>Delivery Information</h2>
                     <div className="mt-5">
@@ -86,10 +146,10 @@ const CheckoutPage = () => {
                                                 {deliveryInfo.id === deliveryInfoId && (
                                                     <div className="actions absolute end-[5px] top-[5px]">
                                                         <Button variant="ghost" className='px-3'>
-                                                            <Pencil size={18}/>
+                                                            <Pencil size={18} />
                                                         </Button>
                                                         <Button variant="ghost" className='px-3'>
-                                                            <Trash size={18}/>
+                                                            <Trash size={18} />
                                                         </Button>
                                                     </div>
                                                 )}
@@ -135,8 +195,22 @@ const CheckoutPage = () => {
                         <p className='text-lg font-medium'>Grand Total</p>
                         <p className='font-medium'>{formatToCurrency(grandTotal)}</p>
                     </div>
+                    <hr className='my-3' />
+                    <h2 className="text-2xl font-medium">Payment Method</h2>
+                    <div className="mt-7">
+                        <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v)} className='space-y-4'>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="cod" id="r1" />
+                                <Label className='text-lg' htmlFor="r1">Cash on delivery</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="gcash" id="r2" />
+                                <Label className='text-lg' htmlFor="r2">GCash</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
                     <div className="mt-14">
-                        <Link href="/payment" className='btn bg-orange px-4 py-3 uppercase rounded-md'>Proceed to payment</Link>
+                        <button type='button' onClick={onProceed} className='btn bg-orange px-4 py-3 uppercase rounded-md'>Proceed to payment</button>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { products } from "./dummy-data";
-import { CartItemWithProduct, DeliveryInformationSchema, ICategory } from "./definitions";
+import { CartItemWithProduct, DeliveryInformationSchema, ICategory, IOrder } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
-import { Tables } from "./supabase";
+import { Database, Tables } from "./supabase";
 import { z } from "zod";
 
 export const fetchProducts = async (categoryId: Tables<'products'>['id']) => {
@@ -116,6 +116,18 @@ export const addDeliveryInformation = async (deliveryInfo:z.infer<typeof Deliver
     const { data, error } = await supabase.from('delivery_informations').insert(deliveryInfo)
 
     if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    return data;
+}
+
+export const createOrder = async (orderData:IOrder) : Promise<Tables<'orders'> | null> => {
+    const supabase = createClient();
+    const {data, error} = await supabase.from('orders').insert(orderData).select().single();
+
+    if(error){
         console.error(error);
         throw error;
     }

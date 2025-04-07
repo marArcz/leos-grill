@@ -94,9 +94,21 @@ export const DeliveryInformationSchema = z.object({
         .string()
 })
 
+export interface IOrder{
+    order_number:string,
+    user_id:string,
+    status:string,
+    is_cancelled:boolean,
+    total:number,
+    payment_method:string,
+    ordered_at:string,
+    delivery_information_id:number
 
+}
 export interface IUserInformation {
     firstname: string;
     lastname: string;
     photo: string;
 }
+
+
