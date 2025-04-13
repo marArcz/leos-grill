@@ -13,6 +13,7 @@ export enum QUERY_KEYS {
     // categories keys
     GET_CATEGORIES = 'getCategories',
     
+    GET_ORDER_DETAILS = 'getOrderDetails',
     GET_PRODUCTS = 'getProducts',
     GET_PRODUCT_BY_ID = 'getProductById',
     GET_DELIVERY_INFORMATIONS = 'getDeliveryInformations',

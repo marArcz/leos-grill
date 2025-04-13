@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { QUERY_KEYS } from "./queryKeys"
-import { addDeliveryInformation, fetchAllCart, fetchCart, fetchCategories, fetchDeliveryInformations, fetchProducts, removeCartItem, updateCartItem } from "../data"
+import { addDeliveryInformation, fetchAllCart, fetchCart, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, removeCartItem, updateCartItem } from "../data"
 import { DeliveryInformationSchema, ICartItem } from '../definitions'
 import { Tables } from "../supabase"
 import { z } from "zod"
@@ -76,5 +76,13 @@ export const useCreateDeliveryInfo = () => {
                 queryKey:[QUERY_KEYS.GET_DELIVERY_INFORMATIONS]
             })
         }
+    })
+}
+
+export const useGetOrderDetails = (orderId:string | null) => {
+    return useQuery({
+        queryKey:[QUERY_KEYS.GET_ORDER_DETAILS,orderId],
+        queryFn:() => orderId? fetchOrderDetails(orderId) : null,
+        enabled:!!orderId
     })
 }

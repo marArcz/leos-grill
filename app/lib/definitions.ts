@@ -31,6 +31,9 @@ export interface ICartItem {
 export type CartItemWithProduct = Tables<'cart_items'> & {
     product: Tables<'products'> | null
 };
+export type OrderWithOrderItems = Tables<'orders'> & {
+    items: Tables<'order_items'>[] | null
+};
 
 export const SignupFormSchema = z.object({
     firstname: z

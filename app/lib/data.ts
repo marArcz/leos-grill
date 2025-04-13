@@ -1,5 +1,5 @@
 import { products } from "./dummy-data";
-import { CartItemWithProduct, DeliveryInformationSchema, ICategory, IOrder } from "./definitions";
+import { CartItemWithProduct, DeliveryInformationSchema, ICategory, IOrder, OrderWithOrderItems } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
@@ -108,6 +108,19 @@ export const fetchDeliveryInformations = async (userId: string): Promise<Tables<
     }
 
     return data;
+}
+
+export const fetchOrderDetails = async (orderId: string): Promise<OrderWithOrderItems | null> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from('orders').select('*, order_items(*)')
+        .eq('id', orderId).returns<OrderWithOrderItems>().single()
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    return data as OrderWithOrderItems;
 }
 
 
