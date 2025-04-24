@@ -6,6 +6,7 @@ import { useGetCartItems, useRemoveCartItem, useUpdateCartItem } from '@/app/lib
 import { Tables } from '@/app/lib/supabase';
 import { formatToCurrency } from '@/app/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useGetSession } from '@/hooks/use-get-session';
 import { toast } from '@/hooks/use-toast';
 import { Add, ShoppingBag, Remove, Delete, Close } from '@mui/icons-material'
 import Link from 'next/link';
@@ -13,8 +14,9 @@ import React, { useEffect, useState } from 'react'
 
 const CartPage = () => {
     const rowsPerPage = 10;
+    const userSession = useGetSession();
     const [paginationIndex, setPaginationIndex] = useState(0);
-    const { data: cartItems, isPending: isGettingCartItems, isError: isErrorCartItems, refetch: refetchCartItems } = useGetCartItems(rowsPerPage, paginationIndex)
+    const { data: cartItems, isPending: isGettingCartItems, isError: isErrorCartItems, refetch: refetchCartItems } = useGetCartItems(userSession?.user.id ?? '',rowsPerPage, paginationIndex)
     const { mutateAsync: updateCartItem, isPending: isLoadingUpdateCartItem } = useUpdateCartItem();
     const { mutateAsync: removeCartItem, isPending: isLoadingRemoveCartItem } = useRemoveCartItem();
 

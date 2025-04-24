@@ -32,7 +32,7 @@ export type CartItemWithProduct = Tables<'cart_items'> & {
     product: Tables<'products'> | null
 };
 export type OrderWithOrderItems = Tables<'orders'> & {
-    items: Tables<'order_items'>[] | null
+    order_items: Tables<'order_items'>[] | null
 };
 
 export const SignupFormSchema = z.object({
@@ -115,3 +115,11 @@ export interface IUserInformation {
 }
 
 
+export interface IAddOrderItem{
+    order_id:number,
+    product:number,
+    product_name:string,
+    product_price:number,
+    product_image:string,
+    quantity:number
+}

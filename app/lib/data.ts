@@ -1,5 +1,5 @@
 import { products } from "./dummy-data";
-import { CartItemWithProduct, DeliveryInformationSchema, ICategory, IOrder, OrderWithOrderItems } from "./definitions";
+import { CartItemWithProduct, DeliveryInformationSchema, IAddToCart, ICategory, IOrder, OrderWithOrderItems } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
@@ -16,6 +16,21 @@ export const fetchProducts = async (categoryId: Tables<'products'>['id']) => {
 
     return data;
 }
+
+export const fetchAllProducts = async (page: number, limit: number): Promise<Tables<'products'>[]> => {
+    const supabase = createClient();
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    const { data, error } = await supabase.from('products')
+        .select('*')
+        .range(from, to);
+
+    if (error) throw new Error(error.message);
+    return data ?? [];
+}
+
 
 export const fetchBestSellers = () => {
     return products.slice(0, 5);
@@ -35,10 +50,11 @@ export const fetchCategories = async () => {
     return data;
 }
 
-export const fetchCart = async (count: number = 10, start: number = 0): Promise<CartItemWithProduct[] | null> => {
+export const fetchCart = async (userId: string, count: number = 10, start: number = 0): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
     let { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
+        .eq('user_id', userId)
         .order('created_at')
         .range(start, start + count);
     console.log('fetched cart: ', data);
@@ -50,6 +66,20 @@ export const fetchCart = async (count: number = 10, start: number = 0): Promise<
     }
 
     return data as CartItemWithProduct[];
+}
+
+export const fetchCartItem = async (productId: number): Promise<CartItemWithProduct | null> => {
+    const supabase = createClient();
+    let { data, error } = await supabase.from('cart_items')
+        .select('*, product:products(*)')
+        .eq('product_id', productId)
+        .single();
+
+    if (error) {
+        console.error('fetching cart item error:', error);
+        return null;
+    }
+    return data as CartItemWithProduct;
 }
 export const fetchAllCart = async (): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
@@ -65,22 +95,32 @@ export const fetchAllCart = async (): Promise<CartItemWithProduct[] | null> => {
 
     return data as CartItemWithProduct[];
 }
+export const addCartItem = async (cart: IAddToCart): Promise<CartItemWithProduct | null> => {
+    const supabase = createClient();
 
+    const { data, error } = await supabase.from('cart_items').insert(cart).select().single();
+
+    if (error) {
+        throw error;
+    }
+
+    return data as CartItemWithProduct;
+}
 export const updateCartItem = async (cartItem: Tables<'cart_items'>): Promise<CartItemWithProduct | null> => {
-    console.log('cartItem: ', cartItem)
     const supabase = createClient()
+    console.log('im updating cart item: ', cartItem)
 
     const { data, error } = await supabase.from('cart_items').update({
         quantity: cartItem.quantity
     })
         .eq('id', cartItem.id)
-        .select('*, product:products(*)');
+        .select('*, product:products(*)')
 
+    console.log('ive updated cart item: ', data)
     if (error) {
         console.log('ERROR UPDATING CART: ', error)
         throw error;
     }
-    console.log('SUccess: ', data)
     return data[0];
 }
 
@@ -124,7 +164,7 @@ export const fetchOrderDetails = async (orderId: string): Promise<OrderWithOrder
 }
 
 
-export const addDeliveryInformation = async (deliveryInfo:z.infer<typeof DeliveryInformationSchema>) => {
+export const addDeliveryInformation = async (deliveryInfo: z.infer<typeof DeliveryInformationSchema>) => {
     const supabase = createClient();
     const { data, error } = await supabase.from('delivery_informations').insert(deliveryInfo)
 
@@ -136,11 +176,45 @@ export const addDeliveryInformation = async (deliveryInfo:z.infer<typeof Deliver
     return data;
 }
 
-export const createOrder = async (orderData:IOrder) : Promise<Tables<'orders'> | null> => {
+export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> | null> => {
     const supabase = createClient();
-    const {data, error} = await supabase.from('orders').insert(orderData).select().single();
 
-    if(error){
+    // create order items from cart
+    const { data: cartItems, error: errorCartItems } = await supabase.from('cart_items').select('*, product:products(*)').eq('user_id', orderData.user_id)
+    console.log('creating order, cartitems: ', cartItems)
+    if (cartItems) {
+        const { data: order, error } = await supabase.from('orders').insert(orderData).select().single();
+
+        if (error) {
+            console.error(error);
+            throw error;
+        }
+        for (let cartItem of cartItems) {
+            cartItem = cartItem as CartItemWithProduct;
+            await supabase.from('order_items').insert({
+                order_id: order.id,
+                product_id: cartItem.product_id,
+                product_name: cartItem.product?.product_name,
+                product_price: cartItem.product?.price,
+                product_image: cartItem.product?.image,
+                quantity: cartItem.quantity
+            })
+
+            await supabase.from('cart_items').delete()
+                .eq('id', cartItem.id);
+        }
+
+        return order;
+    }
+    return null;
+}
+
+export const getOrders = async (userId: string): Promise<Tables<'orders'>[] | null> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from('orders').select('*')
+        .eq('user_id', userId);
+
+    if (error) {
         console.error(error);
         throw error;
     }

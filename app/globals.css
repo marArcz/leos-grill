@@ -33,6 +33,10 @@ body {
     @apply active:scale-105;
   }
 
+  .card{
+    @apply border p-3 rounded-lg ;
+  }
+
 }
 
 @layer base {

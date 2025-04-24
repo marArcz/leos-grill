@@ -10,11 +10,13 @@ export const signin = async (signinData: z.infer<typeof SigninFormSchema>) => {
     } else {
         const user = data.user;
         console.log('user: ', user)
-        if(user.user_metadata.role  ! = 'admin'){
+        if(user.user_metadata.role == 'admin'){
+            console.log('user is an admin')
+            return true;            
+        }else{
+            console.log('user is not an admin: ', user.user_metadata.role)
             await supabase.auth.signOut();
             return false;
-        }else{
-            return true;
         }
     }
 }

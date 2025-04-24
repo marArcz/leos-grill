@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import DeliveryInformationForm from '../components/DeliveryInformationForm';
-import { useGetAllCartItems, useGetDeliveryInfos } from '@/app/lib/react-query/queriesAndMutations';
+import { useCreateOrder, useGetAllCartItems, useGetDeliveryInfos } from '@/app/lib/react-query/queriesAndMutations';
 import { formatToCurrency, generateOrderNumber } from '@/app/lib/utils';
 import Link from 'next/link';
 import { useGetSession } from '@/hooks/use-get-session';
@@ -21,7 +21,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { createOrder } from '@/app/lib/data';
 import { OrderStatus } from '@/app/lib/order-status';
 
 const CheckoutPage = () => {
@@ -34,6 +33,7 @@ const CheckoutPage = () => {
     const [showDeliveryInfoDialog, setShowDeliveryInfoDialog] = useState(false)
     const session = useGetSession();
     const { data: deliveryInfos, isPending: fetchingDeliveryInfos, refetch: refetchDeliveryInfos } = useGetDeliveryInfos(session?.user.id || null)
+    const {mutateAsync:createOrder} = useCreateOrder();
     const { toast } = useToast();
 
     const router = useRouter()
@@ -95,6 +95,10 @@ const CheckoutPage = () => {
                         }
                     }else{
                         console.log('not created: ', data)
+                        toast({
+                            variant: 'destructive',
+                            title: 'Oh no something went wrong your order can\'t be created!'
+                        })
                     }
                 } catch (error) {
                     console.log('Error in creating order: ', error)

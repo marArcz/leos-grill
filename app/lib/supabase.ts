@@ -244,7 +244,7 @@ export type Database = {
           is_cancelled: boolean | null
           order_number: string | null
           ordered_at: string | null
-          payment_method: string | null
+          payment_method: 'cod'|'gcash' | null
           status: string | null
           total: number | null
           user_id: string | null
