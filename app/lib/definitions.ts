@@ -75,6 +75,14 @@ export const SigninFormSchema = z.object({
         string()
 })
 
+export const AddProductFormSchema = z.object({
+    name:z.string(),
+    price:z.number(),
+    image:z.string(),
+    quantity:z.number(),
+    categoryId:z.number()
+})
+
 export const DeliveryInformationSchema = z.object({
     firstname: z
         .string(),
@@ -106,7 +114,6 @@ export interface IOrder{
     payment_method:string,
     ordered_at:string,
     delivery_information_id:number
-
 }
 export interface IUserInformation {
     firstname: string;
@@ -123,3 +130,4 @@ export interface IAddOrderItem{
     product_image:string,
     quantity:number
 }
+
