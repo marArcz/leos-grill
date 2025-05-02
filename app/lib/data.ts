@@ -1,5 +1,5 @@
 import { products } from "./dummy-data";
-import { CartItemWithProduct, DeliveryInformationSchema, IAddToCart, ICategory, IOrder, OrderWithOrderItems } from "./definitions";
+import { AddProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
@@ -178,7 +178,6 @@ export const addDeliveryInformation = async (deliveryInfo: z.infer<typeof Delive
 
 export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> | null> => {
     const supabase = createClient();
-
     // create order items from cart
     const { data: cartItems, error: errorCartItems } = await supabase.from('cart_items').select('*, product:products(*)').eq('user_id', orderData.user_id)
     console.log('creating order, cartitems: ', cartItems)
@@ -216,6 +215,70 @@ export const getOrders = async (userId: string): Promise<Tables<'orders'>[] | nu
 
     if (error) {
         console.error(error);
+        throw error;
+    }
+
+    return data;
+}
+
+export const uploadImage = async (file: File, bucket: string, path: string): Promise<String> => {
+    if (!file) throw new Error('No file provided');
+    const supabase = createClient();
+
+    // Step 1: Try to download the file (to check if it exists)
+    const { data, error } = await supabase.storage.from(bucket).download(path)
+
+    if (!error) {
+        // File exists, return its public URL
+        const { data:publicURL } = supabase.storage.from(bucket).getPublicUrl(path)
+        return publicURL.publicUrl
+    }
+
+    // Upload the file
+    const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(path, file, {
+            cacheControl: '3600',
+            upsert: false, // Set to true if you want to overwrite existing files
+            contentType: file.type,
+        });
+
+    if (uploadError) {
+        throw new Error(`Upload failed: ${uploadError.message}`);
+    }
+
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(path);
+
+    return publicUrlData.publicUrl;
+}
+
+export const addProduct = async (productDetails: z.infer<typeof AddProductFormSchema>): Promise<Tables<'products'> | null> => {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.from('products')
+        .insert(productDetails)
+        .select()
+        .single();
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    return data;
+}
+
+export const getCategories = async (): Promise<Tables<'categories'>[] | null> => {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.from("categories")
+        .select('*');
+
+    if (error) {
+        console.log('error');
         throw error;
     }
 

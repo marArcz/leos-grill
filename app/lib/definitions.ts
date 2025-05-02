@@ -15,6 +15,13 @@ export interface IProduct {
     category: string;
 }
 
+export interface IAddProduct {
+    name: string,
+    description: string,
+    price: number,
+    categoryId: number
+}
+
 export interface IAddToCart {
     product_id: number;
     quantity: number;
@@ -74,14 +81,13 @@ export const SigninFormSchema = z.object({
     role: z.
         string()
 })
-
 export const AddProductFormSchema = z.object({
-    name:z.string(),
-    price:z.number(),
-    image:z.string(),
-    quantity:z.number(),
-    categoryId:z.number()
-})
+    name: z.string(),
+    price: z.string().transform((val) => Number(val)),
+    image: z.string(),
+    quantity: z.string().transform((val) => Number(val)),
+    categoryId: z.string()
+  })
 
 export const DeliveryInformationSchema = z.object({
     firstname: z
@@ -90,30 +96,30 @@ export const DeliveryInformationSchema = z.object({
         .string(),
     lastname: z
         .string(),
-    email:z
+    email: z
         .string()
         .email(),
-    street:z
+    street: z
         .string(),
-    city:z
+    city: z
         .string(),
-    barangay:z 
+    barangay: z
         .string(),
-    phone:z
+    phone: z
         .string(),
-    user_id:z
+    user_id: z
         .string()
 })
 
-export interface IOrder{
-    order_number:string,
-    user_id:string,
-    status:string,
-    is_cancelled:boolean,
-    total:number,
-    payment_method:string,
-    ordered_at:string,
-    delivery_information_id:number
+export interface IOrder {
+    order_number: string,
+    user_id: string,
+    status: string,
+    is_cancelled: boolean,
+    total: number,
+    payment_method: string,
+    ordered_at: string,
+    delivery_information_id: number
 }
 export interface IUserInformation {
     firstname: string;
@@ -122,12 +128,17 @@ export interface IUserInformation {
 }
 
 
-export interface IAddOrderItem{
-    order_id:number,
-    product:number,
-    product_name:string,
-    product_price:number,
-    product_image:string,
-    quantity:number
+export interface IAddOrderItem {
+    order_id: number,
+    product: number,
+    product_name: string,
+    product_price: number,
+    product_image: string,
+    quantity: number
 }
 
+export interface IFilePath {
+    id: string;
+    path: string;
+    fullPath: string;
+}

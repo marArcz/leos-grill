@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { QUERY_KEYS } from "./queryKeys"
-import { addCartItem, addDeliveryInformation, createOrder, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getOrders, removeCartItem, updateCartItem } from "../data"
-import { DeliveryInformationSchema, IAddToCart, ICartItem, IOrder } from '../definitions'
+import { addCartItem, addDeliveryInformation, addProduct, createOrder, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getOrders, removeCartItem, updateCartItem, uploadImage } from "../data"
+import { AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder } from '../definitions'
 import { Tables } from "../supabase"
 import { z } from "zod"
 
@@ -135,3 +135,24 @@ export const useGetOrders = (userId: string | null) => {
         enabled: !!userId
     })
 }
+
+export const useUploadImage = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn:(data:{file:File, bucket:string,path:string}) => uploadImage(data.file,data.bucket,data.path),
+    })
+}   
+
+export const useAddProduct = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (productDetails:z.infer<typeof AddProductFormSchema>) => addProduct(productDetails),
+        onSuccess:(data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_ALL_PRODUCTS],
+            });
+        }
+    })
+}
+
