@@ -82,12 +82,21 @@ export const SigninFormSchema = z.object({
         string()
 })
 export const AddProductFormSchema = z.object({
-    name: z.string(),
+    product_name: z.string(),
     price: z.string().transform((val) => Number(val)),
     image: z.string(),
-    quantity: z.string().transform((val) => Number(val)),
-    categoryId: z.string()
-  })
+    category_id: z.string().transform((val) => Number(val)),
+    product_description: z.string(),
+})
+
+export const UpdateProductFormSchema = z.object({
+    id:z.number(),
+    product_name: z.string(),
+    price: z.string().transform((val) => Number(val)),
+    image: z.string(),
+    category_id: z.string().transform((val) => Number(val)),
+    product_description: z.string(),
+})
 
 export const DeliveryInformationSchema = z.object({
     firstname: z

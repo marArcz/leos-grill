@@ -1,5 +1,19 @@
-'use client'
-import { AddProductFormSchema, SigninFormSchema } from '@/app/lib/definitions'
+'use client';
+
+import { useGetCategories, useGetProductById, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
+import React, { useState } from 'react'
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { UpdateProductFormSchema } from '@/app/lib/definitions';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
@@ -9,75 +23,49 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import ImageUploadDialog from '@/components/ui/image-upload-dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
-import ImageUploadDialog from '@/components/ui/image-upload-dialog'
-import { useAddProduct, useGetCategories } from '@/app/lib/react-query/queriesAndMutations'
-import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/hooks/use-toast'
-import Link from 'next/link'
-
-const AddProductPage = () => {
+const UpdateProductPage = ({ params }: { params: { id: string } }) => {
     const [uploadingImage, setUploadingImage] = useState(false)
-    const { mutateAsync: addProduct, isPending: addProductLoading } = useAddProduct();
     const { data: categories, isPending: getCategoriesLoading } = useGetCategories();
+    const { data: productDetails } = useGetProductById(Number(params.id));
+    const { mutateAsync: updateProduct, isPending: isUpdatingProduct } = useUpdateProduct();
 
-    // rename properties
-    const form = useForm<z.infer<typeof AddProductFormSchema>>({
-        resolver: zodResolver(AddProductFormSchema),
+    const form = useForm<z.infer<typeof UpdateProductFormSchema>>({
+        resolver: zodResolver(UpdateProductFormSchema),
         defaultValues: {
             product_name: '',
             price: 0,
-            image: '',
-            category_id: 0,
+            image: productDetails?.image ?? '',
+            category_id: productDetails?.category_id ?? 0,
             product_description: '',
         }
     })
 
-    const onSubmit = async (formData: z.infer<typeof AddProductFormSchema>) => {
-        try {
-            const data = await addProduct(formData);
-            toast({
-                title: 'Successfully added product!'
-            })
-        } catch (error) {
-            toast({
-                title: 'Error adding product please try again later!'
-            })
-        }
+
+    const onSubmit = async (formData: z.infer<typeof UpdateProductFormSchema>) => {
+        const data = await updateProduct(formData);
 
     }
 
     return (
-        <div className='p-3 relative'>
+        <>
             <Breadcrumb className='mb-3'>
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        {/* <BreadcrumbLink href="/admin/products">Products</BreadcrumbLink> */}
                         <Link href="/admin/products">
-                            Products
+                        Products
                         </Link>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Add Product</BreadcrumbPage>
+                        <BreadcrumbPage>Update Product</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-
-            {/* <hr className='my-3' /> */}
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="flex space-x-3">
@@ -169,15 +157,15 @@ const AddProductPage = () => {
                             </div>
                             {/* submit button */}
                             {/* <button className='bg-dark_2 py-2 rounded w-full block btn' type='submit'>Submit</button> */}
-                            <Button type='submit' disabled={addProductLoading} className='p-3 text-dark font-medium bg-yellow rounded text-center w-full'>
-                                {addProductLoading ? 'Adding product...' : 'Add Product'}
+                            <Button type='submit' disabled={isUpdatingProduct} className='p-3 text-dark font-medium bg-yellow rounded text-center w-full'>
+                                {isUpdatingProduct ? 'Adding product...' : 'Add Product'}
                             </Button>
                         </div>
                     </div>
                 </form>
             </Form>
-        </div>
+        </>
     )
 }
 
-export default AddProductPage
+export default UpdateProductPage

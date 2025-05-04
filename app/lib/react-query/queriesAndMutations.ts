@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { QUERY_KEYS } from "./queryKeys"
-import { addCartItem, addDeliveryInformation, addProduct, createOrder, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getOrders, removeCartItem, updateCartItem, uploadImage } from "../data"
-import { AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder } from '../definitions'
+import { addCartItem, addDeliveryInformation, addProduct, createOrder, deleteProduct, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getOrders, getProductById, removeCartItem, updateCartItem, updateProduct, uploadImage } from "../data"
+import { AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder, UpdateProductFormSchema } from '../definitions'
 import { Tables } from "../supabase"
 import { z } from "zod"
 
@@ -40,6 +40,30 @@ export const useGetAllProducts = (page: number, limit:number) => {
         queryKey: [QUERY_KEYS.GET_ALL_PRODUCTS, page],
         queryFn: () => fetchAllProducts(page, limit),
         
+    })
+}
+
+export const useUpdateProduct = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn:(productData:z.infer<typeof UpdateProductFormSchema>) => updateProduct(productData),
+        onSuccess:(data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_PRODUCTS, QUERY_KEYS.GET_PRODUCT_BY_ID, data.id],
+            })
+        }
+    })
+}
+
+export const useDeleteProduct = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn:(id:number) => deleteProduct(id),
+        onSuccess:(data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_PRODUCTS, QUERY_KEYS.GET_PRODUCT_BY_ID],
+            })
+        }
     })
 }
 
@@ -156,3 +180,10 @@ export const useAddProduct = () => {
     })
 }
 
+export const useGetProductById = (id:number) => {
+    return useQuery({
+        queryKey:[QUERY_KEYS.GET_PRODUCT_BY_ID+id],
+        queryFn:() => getProductById(id),
+        enabled:!!id
+    })
+}

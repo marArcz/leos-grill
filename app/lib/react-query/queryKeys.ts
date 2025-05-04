@@ -19,7 +19,7 @@ export enum QUERY_KEYS {
     GET_ORDER_DETAILS = 'getOrderDetails',
     GET_PRODUCTS = 'getProducts',
     GET_ALL_PRODUCTS = 'getAllProducts',
-    GET_PRODUCT_BY_ID = 'getProductById',
+    GET_PRODUCT_BY_ID = 'getProductById=',
     GET_DELIVERY_INFORMATIONS = 'getDeliveryInformations',
     CREATE_ORDER = 'createOrder',
   } 

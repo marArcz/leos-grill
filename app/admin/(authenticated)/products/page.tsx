@@ -9,14 +9,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { useGetAllProducts, useGetProducts } from '@/app/lib/react-query/queriesAndMutations'
+import { useDeleteProduct, useGetAllProducts, useGetProducts, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
 import { formatToCurrency } from '@/app/lib/utils';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const ProductsPage = () => {
     const LIMIT = 10;
     const [page, setPage] = useState(1);
-    const { data: products, isPending: fetchingProducts } = useGetAllProducts(page, LIMIT);
+    const { data: products, isPending: isFetchingProducts } = useGetAllProducts(page, LIMIT);
+
+    const { mutateAsync: updateProduct, isPending: isUpdatingProduct } = useUpdateProduct();
+    const { mutateAsync: deleteProduct, isPending: isDeletingProduct } = useDeleteProduct();
 
     return (
         <>
@@ -34,29 +38,65 @@ const ProductsPage = () => {
                 {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="">Product</TableHead>
-                        <TableHead className='w-[100px]'>Price</TableHead>
+                        <TableHead className="w-2/5">Product</TableHead>
+                        <TableHead className='w-[120px]'>Price</TableHead>
                         <TableHead>Category</TableHead>
                         <TableHead className="text-left">Availability</TableHead>
+                        <TableHead className="text-left">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {products && products.map((product, index) => (
                         <TableRow key={index}>
                             <TableCell>
-                                <div className="flex">
-                                    <img src={product.image ?? ''} alt="" />
+                                <div className="flex items-center gap-4">
+                                    <img className='lg:w-2/5 rounded' src={product.image ?? ''} alt="" />
                                     <span>{product.product_name}</span>
                                 </div>
                             </TableCell>
                             <TableCell>{formatToCurrency(product.price || 0)}</TableCell>
                             <TableCell>{product.id}</TableCell>
                             <TableCell className='text-left'>{product.is_available ? 'Available' : 'Not Available'}</TableCell>
+                            <TableCell>
+                                <div className="flex gap-2">
+                                    <Link href={`/admin/products/edit/${product.id}`}>
+                                        <Button type='button'>Edit</Button>
+                                    </Link>
+                                    <Button onClick={() => { }} type='button'>Delete</Button>
+                                </div>
+                            </TableCell>
                         </TableRow>
                     ))}
+                    {isFetchingProducts && (
+                        <TableRow>
+                            <TableCell colSpan={5} className='text-center'>
+                                Fetching products please wait...
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
-
+            <div className="flex items-center justify-center gap-4 mt-6">
+                <button
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    disabled={page === 1}
+                    className={`px-4 py-2 rounded ${
+                        page === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+                    }`}
+                >
+                    Previous
+                </button>
+                <span className="text-sm font-medium text-gray-700">Page {page}</span>
+                <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={(products?.length || 0) < LIMIT}
+                    className={`px-4 py-2 rounded ${
+                        (products?.length || 0) < LIMIT ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+                    }`}
+                >
+                    Next
+                </button>
+            </div>
         </>
     )
 }
