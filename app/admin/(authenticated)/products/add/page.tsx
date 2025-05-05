@@ -28,12 +28,13 @@ import { useAddProduct, useGetCategories } from '@/app/lib/react-query/queriesAn
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/hooks/use-toast'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const AddProductPage = () => {
     const [uploadingImage, setUploadingImage] = useState(false)
     const { mutateAsync: addProduct, isPending: addProductLoading } = useAddProduct();
     const { data: categories, isPending: getCategoriesLoading } = useGetCategories();
-
+    const router = useRouter();
     // rename properties
     const form = useForm<z.infer<typeof AddProductFormSchema>>({
         resolver: zodResolver(AddProductFormSchema),
@@ -52,6 +53,7 @@ const AddProductPage = () => {
             toast({
                 title: 'Successfully added product!'
             })
+            router.push("/admin/products")
         } catch (error) {
             toast({
                 title: 'Error adding product please try again later!'

@@ -1,5 +1,5 @@
 import { products } from "./dummy-data";
-import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems } from "./definitions";
+import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems, ProductWithCategory } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
@@ -17,14 +17,15 @@ export const fetchProducts = async (categoryId: Tables<'products'>['id']) => {
     return data;
 }
 
-export const fetchAllProducts = async (page: number, limit: number): Promise<Tables<'products'>[]> => {
+export const fetchAllProducts = async (page: number, limit: number): Promise<ProductWithCategory[]> => {
     const supabase = createClient();
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
     const { data, error } = await supabase.from('products')
-        .select('*')
+        .select('*, category:categories(*)')
+        .returns<ProductWithCategory[]>()
         .range(from, to);
 
     if (error) throw new Error(error.message);
@@ -35,6 +36,7 @@ export const updateProduct = async (productData:z.infer<typeof UpdateProductForm
     const supabase = createClient();
     const {data, error} = await supabase.from('products')
             .update(productData)
+            .eq('id', productData.id)
             .select()
             .single()
     if(error) {
@@ -313,9 +315,9 @@ export const getCategories = async (): Promise<Tables<'categories'>[] | null> =>
     return data;
 }
 
-export const getProductById = async (id:number):Promise<Tables<'products'> | null> => {
+export const getProductById = async (id:number):Promise<ProductWithCategory | null> => {
     const supabase = createClient();
-    const {data, error} = await supabase.from("products").select().eq("id",id).single();
+    const {data, error} = await supabase.from("products").select("*, category:categories(*)").eq("id",id).returns<ProductWithCategory>().single();
 
     if(error){
         console.error("Error fetching product details: " , error);

@@ -38,6 +38,9 @@ export interface ICartItem {
 export type CartItemWithProduct = Tables<'cart_items'> & {
     product: Tables<'products'> | null
 };
+export type ProductWithCategory = Tables<'products'> & {
+    category: Tables<'categories'> | null
+};
 export type OrderWithOrderItems = Tables<'orders'> & {
     order_items: Tables<'order_items'>[] | null
 };
@@ -92,9 +95,9 @@ export const AddProductFormSchema = z.object({
 export const UpdateProductFormSchema = z.object({
     id:z.number(),
     product_name: z.string(),
-    price: z.string().transform((val) => Number(val)),
+    price: z.number(),
     image: z.string(),
-    category_id: z.string().transform((val) => Number(val)),
+    category_id: z.number(),
     product_description: z.string(),
 })
 

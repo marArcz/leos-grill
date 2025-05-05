@@ -55,7 +55,7 @@ const ProductsPage = () => {
                                 </div>
                             </TableCell>
                             <TableCell>{formatToCurrency(product.price || 0)}</TableCell>
-                            <TableCell>{product.id}</TableCell>
+                            <TableCell>{product.category?.category_name}</TableCell>
                             <TableCell className='text-left'>{product.is_available ? 'Available' : 'Not Available'}</TableCell>
                             <TableCell>
                                 <div className="flex gap-2">
