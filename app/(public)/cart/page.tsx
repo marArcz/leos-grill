@@ -16,7 +16,7 @@ const CartPage = () => {
     const rowsPerPage = 10;
     const userSession = useGetSession();
     const [paginationIndex, setPaginationIndex] = useState(0);
-    const { data: cartItems, isPending: isGettingCartItems, isError: isErrorCartItems, refetch: refetchCartItems } = useGetCartItems(userSession?.user.id ?? '',rowsPerPage, paginationIndex)
+    const { data: cartItems, isPending: isGettingCartItems, isError: isErrorCartItems, refetch: refetchCartItems } = useGetCartItems(userSession?.user.id ?? '', rowsPerPage, paginationIndex)
     const { mutateAsync: updateCartItem, isPending: isLoadingUpdateCartItem } = useUpdateCartItem();
     const { mutateAsync: removeCartItem, isPending: isLoadingRemoveCartItem } = useRemoveCartItem();
 
@@ -76,7 +76,7 @@ const CartPage = () => {
                                 {cartItems.map((cartItem, index) => (
                                     <div className='grid grid-cols-6 items-center gap-3 border-b pb-3'>
                                         <div className='flex items-center gap-4 col-span-2'>
-                                            <img src="/images/hero-bg.jpg" className='size-20 object-cover' alt="" />
+                                            <img src={cartItem.product?.image ?? ''} className='size-20 object-cover' alt="" />
                                             <p className=''>{cartItem.product?.product_name}</p>
                                         </div>
                                         <div>
@@ -88,7 +88,7 @@ const CartPage = () => {
                                             <Button disabled={isLoadingUpdateCartItem} onClick={() => updateQuantity(cartItem, 'down')} className='text-sm rounded-full p-3 w-3 h-3'><Remove /></Button>
                                         </div>
                                         <div>
-                                            <p>{formatToCurrency((cartItem.product?.price || 0) * (cartItem.quantity))}</p>
+                                            <p>{formatToCurrency((cartItem.product?.price || 0) * (cartItem.quantity ?? 0))}</p>
                                         </div>
                                         <div>
                                             <button className='' onClick={() => onRemoveItem(cartItem.id)}>

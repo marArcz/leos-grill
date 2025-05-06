@@ -13,10 +13,11 @@ export const useGetCartItems = (userId: string, count: number = 10, start: numbe
     })
 }
 
-export const useGetAllCartItems = () => {
+export const useGetAllCartItems = (user_id: string | null) => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_CART_ITEMS],
-        queryFn: () => fetchAllCart()
+        queryFn: () => user_id ? fetchAllCart(user_id) : null,
+        enabled: !!user_id
     })
 }
 
@@ -83,7 +84,7 @@ export const useAddCartItem = () => {
         mutationFn: (cart: IAddToCart) => addCartItem(cart),
         onSuccess: (data) => {
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.ADD_CART_ITEM],
+                queryKey: [QUERY_KEYS.GET_CART_ITEMS],
             })
         }
     })

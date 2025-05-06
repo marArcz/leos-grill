@@ -23,7 +23,7 @@ const Navbar = ({ filled = false }) => {
     const [session, setSession] = useState<Session | null>(null)
     const router = useRouter();
     const supabase = createClient()
-    const { data: cartItems, isPending:cartItemsLoading } = useGetAllCartItems();
+    const { data: cartItems, isPending:cartItemsLoading } = useGetAllCartItems(session?.user.id ?? null);
     useEffect(() => {
         // Check initial session
         const getSession = async () => {

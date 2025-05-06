@@ -36,7 +36,7 @@ const ProductComponent = ({ product }: Props) => {
             if (existingCartItem) {
                 updateCartItem({
                     ...existingCartItem,
-                    quantity:existingCartItem.quantity + 1
+                    quantity: (existingCartItem.quantity ?? 0) + 1
                 })
                     .then(res => {
                         toast({
@@ -74,7 +74,7 @@ const ProductComponent = ({ product }: Props) => {
 
     return (
         <div className='bg-[#2F2F2F] gap-4 rounded-lg h-full px-5 py-8 flex items-center w-full'>
-            <img src="" className=' aspect-square xl:w-[40%] lg:w-[30%] rounded-full object-cover bg-gray-300' alt="" />
+            <img src={product?.image ?? ''} className=' aspect-square xl:w-[40%] lg:w-[30%] rounded-full object-cover bg-gray-300' alt="" />
             <div className='flex-1'>
                 <p className='text-lg'>{product.product_name}</p>
                 <p className='text-gray-400'>{product.product_description}</p>

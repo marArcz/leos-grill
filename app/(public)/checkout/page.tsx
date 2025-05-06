@@ -24,7 +24,6 @@ import { Label } from '@/components/ui/label';
 import { OrderStatus } from '@/app/lib/order-status';
 
 const CheckoutPage = () => {
-    const { data: cartItems } = useGetAllCartItems();
     const [deliveryInfoId, setDeliveryInfoId] = useState<number | null>(null)
     const [cartTotal, setCartTotal] = useState(0)
     const [deliveryFee, setDeliveryFee] = useState(30);
@@ -35,6 +34,7 @@ const CheckoutPage = () => {
     const { data: deliveryInfos, isPending: fetchingDeliveryInfos, refetch: refetchDeliveryInfos } = useGetDeliveryInfos(session?.user.id || null)
     const {mutateAsync:createOrder} = useCreateOrder();
     const { toast } = useToast();
+    const { data: cartItems } = useGetAllCartItems(session?.user.id ?? null);
 
     const router = useRouter()
     // compute subtotal
@@ -44,7 +44,7 @@ const CheckoutPage = () => {
             let total = 0;
             for (let cartItem of cartItems) {
                 // console.log('cartitem total: ', (cartItem.quantity) * (cartItem.product?.price ?? 0))
-                total += (cartItem.quantity) * (cartItem.product?.price ?? 0)
+                total += (cartItem.quantity ?? 0) * (cartItem.product?.price ?? 0)
             }
             setCartTotal(total)
         }

@@ -4,9 +4,12 @@ import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
 
-export const fetchProducts = async (categoryId: Tables<'products'>['id']) => {
+export const fetchProducts = async (categoryId: number):Promise<Tables<'products'>[]> => {
     const supabase = createClient();
-    const { data, error } = await supabase.from('products').select('*').eq('id', categoryId);
+    const { data, error } = await supabase.from('products')
+    .select('*')
+    .eq('category_id', categoryId)
+
 
     if (error) {
         console.error('Error fetching products:', error);
@@ -114,19 +117,21 @@ export const fetchCartItem = async (productId: number): Promise<CartItemWithProd
     }
     return data as CartItemWithProduct;
 }
-export const fetchAllCart = async (): Promise<CartItemWithProduct[] | null> => {
+export const fetchAllCart = async (user_id:string): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
     let { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
+        .eq('user_id',user_id)
         .order('created_at')
+        .returns<CartItemWithProduct[]>();
 
 
     if (error) {
-        console.error('categories error:', error);
+        console.error('fetch cart error:', error);
         return null;
     }
 
-    return data as CartItemWithProduct[];
+    return data;
 }
 export const addCartItem = async (cart: IAddToCart): Promise<CartItemWithProduct | null> => {
     const supabase = createClient();
