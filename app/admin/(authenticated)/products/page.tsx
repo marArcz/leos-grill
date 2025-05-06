@@ -13,14 +13,30 @@ import { useDeleteProduct, useGetAllProducts, useGetProducts, useUpdateProduct }
 import { formatToCurrency } from '@/app/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 const ProductsPage = () => {
     const LIMIT = 10;
     const [page, setPage] = useState(1);
-    const { data: products, isPending: isFetchingProducts } = useGetAllProducts(page, LIMIT);
+    const { data: products, isPending: isFetchingProducts, refetch:refetchProducts } = useGetAllProducts(page, LIMIT);
 
-    const { mutateAsync: updateProduct, isPending: isUpdatingProduct } = useUpdateProduct();
     const { mutateAsync: deleteProduct, isPending: isDeletingProduct } = useDeleteProduct();
+
+    const handleDeleteProduct = async (id: number) => {
+        try {
+            await deleteProduct(id);
+            toast({
+                title: 'Successfully deleted!'
+            })
+            refetchProducts()
+        } catch (error) {
+            toast({
+                title: 'Something went wrong please try again later!',
+                variant: 'destructive'
+            })
+            console.error(error)
+        }
+    }
 
     return (
         <>
@@ -59,10 +75,13 @@ const ProductsPage = () => {
                             <TableCell className='text-left'>{product.is_available ? 'Available' : 'Not Available'}</TableCell>
                             <TableCell>
                                 <div className="flex gap-2">
-                                    <Link href={`/admin/products/edit/${product.id}`}>
-                                        <Button type='button'>Edit</Button>
-                                    </Link>
-                                    <Button onClick={() => { }} type='button'>Delete</Button>
+                                    <Button disabled={isDeletingProduct} type='button'>
+                                        <Link href={`/admin/products/edit/${product.id}`}>
+                                            Edit
+                                        </Link>
+                                    </Button>
+
+                                    <Button disabled={isDeletingProduct} onClick={() => handleDeleteProduct(product.id)} type='button'>Delete</Button>
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -80,9 +99,8 @@ const ProductsPage = () => {
                 <button
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded ${
-                        page === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
-                    }`}
+                    className={`px-4 py-2 rounded ${page === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+                        }`}
                 >
                     Previous
                 </button>
@@ -90,9 +108,8 @@ const ProductsPage = () => {
                 <button
                     onClick={() => setPage((p) => p + 1)}
                     disabled={(products?.length || 0) < LIMIT}
-                    className={`px-4 py-2 rounded ${
-                        (products?.length || 0) < LIMIT ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
-                    }`}
+                    className={`px-4 py-2 rounded ${(products?.length || 0) < LIMIT ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+                        }`}
                 >
                     Next
                 </button>

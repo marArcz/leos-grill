@@ -9,6 +9,14 @@ const AdminSidebar: React.FC = () => {
 
     const pathName = usePathname();
 
+    const doesPathMatches = (basePath: string, pathName:string) : boolean => {
+        const escapedPath = basePath.replace(/\//g, '\\/');
+        const pattern = `^${escapedPath}(\\/.*)?$`;
+        const regex = new RegExp(pattern)
+        return regex.test(pathName)
+    }
+
+
     return (
         <div className="h-full w-64 bg-zinc-800 rounded-lg text-white flex flex-col">
             <div className="text-center pt-3">
@@ -24,8 +32,8 @@ const AdminSidebar: React.FC = () => {
                     <li>
                         <Link
                             href="/admin"
-                            className={clsx("flex items-center space-x-3 p-2 rounded hover:bg-zinc-700",{
-                                "bg-zinc-200 text-yellow bg-opacity-10":pathName == '/admin'
+                            className={clsx("flex items-center space-x-3 p-2 rounded hover:bg-zinc-700", {
+                                "bg-zinc-200 text-yellow bg-opacity-10": pathName == '/admin'
                             })}
                         >
                             <Dashboard />
@@ -35,8 +43,8 @@ const AdminSidebar: React.FC = () => {
                     <li>
                         <Link
                             href="/admin/products"
-                            className={clsx("flex items-center space-x-3 p-2 rounded hover:bg-zinc-700",{
-                                "bg-zinc-200 text-yellow bg-opacity-10":pathName == '/admin/products'
+                            className={clsx("flex items-center space-x-3 p-2 rounded hover:bg-zinc-700", {
+                                "bg-zinc-200 text-yellow bg-opacity-10": doesPathMatches('/admin/products',pathName)
                             })}
                         >
                             <ProductsIcon />

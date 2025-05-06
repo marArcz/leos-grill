@@ -32,14 +32,18 @@ export const fetchAllProducts = async (page: number, limit: number): Promise<Pro
     return data ?? [];
 }
 
-export const updateProduct = async (productData:z.infer<typeof UpdateProductFormSchema>) : Promise<Tables<'products'>> => {
+export const updateProduct = async (productData: z.infer<typeof UpdateProductFormSchema>): Promise<ProductWithCategory | null> => {
     const supabase = createClient();
-    const {data, error} = await supabase.from('products')
-            .update(productData)
-            .eq('id', productData.id)
-            .select()
-            .single()
-    if(error) {
+    const { id, ...updateFields } = productData; // Destructure to ensure `id` is explicitly handled
+    console.log('product: ', productData);
+
+    const { data, error } = await supabase.from('products')
+        .update(updateFields)
+        .eq('id', id)
+        .select('*, category:categories(*)')
+        .single();
+
+    if (error) {
         console.error('Error updating product:', error);
         throw error;
     }
@@ -137,7 +141,6 @@ export const addCartItem = async (cart: IAddToCart): Promise<CartItemWithProduct
 }
 export const updateCartItem = async (cartItem: Tables<'cart_items'>): Promise<CartItemWithProduct | null> => {
     const supabase = createClient()
-    console.log('im updating cart item: ', cartItem)
 
     const { data, error } = await supabase.from('cart_items').update({
         quantity: cartItem.quantity
@@ -145,7 +148,6 @@ export const updateCartItem = async (cartItem: Tables<'cart_items'>): Promise<Ca
         .eq('id', cartItem.id)
         .select('*, product:products(*)')
 
-    console.log('ive updated cart item: ', data)
     if (error) {
         console.log('ERROR UPDATING CART: ', error)
         throw error;

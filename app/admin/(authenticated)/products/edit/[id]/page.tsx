@@ -1,6 +1,6 @@
 'use client';
 
-import { useGetCategories, useGetProductById, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
+import { useDeleteProduct, useGetCategories, useGetProductById, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
 import React, { useEffect, useState } from 'react'
 import {
     Breadcrumb,
@@ -40,34 +40,33 @@ const UpdateProductPage = ({ params }: { params: { id: number } }) => {
     const form = useForm<z.infer<typeof UpdateProductFormSchema>>({
         resolver: zodResolver(UpdateProductFormSchema),
         defaultValues: {
-            id:productDetails?.id,
+            id: productDetails?.id,
             product_name: productDetails?.product_name ?? '',
             price: 0,
-            image: productDetails?.image ?? '/images/placeholder.jpeg',
+            image: productDetails?.image || '/images/placeholder.jpeg',
             category_id: productDetails?.category_id ?? 0,
             product_description: '',
         }
     })
 
     useEffect(() => {
-        console.log('product: ', productDetails)
-
-        if (categories) {
+        if (productDetails) {
+            console.log('product: ', productDetails)
             form.setValue('id', productDetails?.id ?? 0)
             form.setValue('product_name', productDetails?.product_name ?? '')
             form.setValue('price', productDetails?.price ?? 0)
-            form.setValue('image', productDetails?.image ?? '')
+            form.setValue('image', productDetails?.image ?? '/images/placeholder.jpeg')
             form.setValue('product_description', productDetails?.product_description ?? '')
             form.setValue('category_id', productDetails?.category_id ?? 0)
         }
-    }, [productDetails, categories])
+    }, [isFetchingProduct, productDetails,categories])
 
 
     const onSubmit = async (formData: z.infer<typeof UpdateProductFormSchema>) => {
         try {
             const data = await updateProduct(formData);
             toast({
-                title:'Successfully updated products'
+                title: 'Successfully updated products'
             })
             router.push("/admin/products");
         } catch (error) {
@@ -102,7 +101,7 @@ const UpdateProductPage = ({ params }: { params: { id: number } }) => {
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="flex space-x-3">
                             <div className='w-2/5'>
-                                <img src={form.getValues().image || '/images/placeholder.jpeg'} alt="" className='w-full object-cover rounded-sm' />
+                                <img src={form.getValues().image ?? '/images/placeholder.jpeg'} alt="" className='w-full object-cover rounded-sm' />
                                 <button type='button' onClick={() => setUploadingImage(true)} className='btn bg-dark_2 w-full py-3 px-2 mt-2'>Upload Image</button>
                                 <ImageUploadDialog
                                     onFinishUpload={(publicUrl) => {
@@ -138,7 +137,7 @@ const UpdateProductPage = ({ params }: { params: { id: number } }) => {
                                             <FormItem>
                                                 <FormLabel>Price</FormLabel>
                                                 <FormControl>
-                                                    <Input onChange={v => field.onChange(v)} value={field.value} type="number" placeholder="Enter price"  />
+                                                    <Input onChange={v => field.onChange(v)} value={field.value} type="number" placeholder="Enter price" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -154,6 +153,7 @@ const UpdateProductPage = ({ params }: { params: { id: number } }) => {
                                                 <FormLabel>Category:</FormLabel>
                                                 <FormControl>
                                                     <Select
+                                                        defaultValue={String(productDetails?.category_id) ?? ''}
                                                         value={String(field.value)}
                                                         onValueChange={(value) => field.onChange(Number(value))}
                                                         disabled={getCategoriesLoading}
@@ -168,7 +168,7 @@ const UpdateProductPage = ({ params }: { params: { id: number } }) => {
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
-                                                <FormMessage/>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />

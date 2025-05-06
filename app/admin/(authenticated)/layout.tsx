@@ -5,11 +5,11 @@ import AdminSidebar from '../ui/AdminSidebar'
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <>
-            <div className="flex space-x-3 h-screen p-3">
+            <div className="flex space-x-3 h-screen p-3 overflow-hidden">
                 <AdminSidebar />
-                <main className=' w-full'>
+                <main className=' w-full h-full overflow-y-auto pe-2'>
                     <AdminNavbar />
-                    <div className="mt-3">
+                    <div className="mt-3 ">
                         {children}
                     </div>
                 </main>

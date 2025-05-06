@@ -35,22 +35,24 @@ export const useGetProducts = (categoryId: number) => {
     })
 }
 
-export const useGetAllProducts = (page: number, limit:number) => {
+export const useGetAllProducts = (page: number, limit: number) => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_ALL_PRODUCTS, page],
         queryFn: () => fetchAllProducts(page, limit),
-        
+
     })
 }
 
 export const useUpdateProduct = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn:(productData:z.infer<typeof UpdateProductFormSchema>) => updateProduct(productData),
-        onSuccess:(data) => {
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_PRODUCTS, QUERY_KEYS.GET_PRODUCT_BY_ID, data.id],
-            })
+        mutationFn: (productData: z.infer<typeof UpdateProductFormSchema>) => updateProduct(productData),
+        onSuccess: (data) => {
+            if (data) {
+                queryClient.invalidateQueries({
+                    queryKey: [QUERY_KEYS.GET_PRODUCTS, QUERY_KEYS.GET_PRODUCT_BY_ID, data.id],
+                })
+            }
         }
     })
 }
@@ -58,8 +60,8 @@ export const useUpdateProduct = () => {
 export const useDeleteProduct = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn:(id:number) => deleteProduct(id),
-        onSuccess:(data) => {
+        mutationFn: (id: number) => deleteProduct(id),
+        onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_PRODUCTS, QUERY_KEYS.GET_PRODUCT_BY_ID],
             })
@@ -163,16 +165,16 @@ export const useGetOrders = (userId: string | null) => {
 export const useUploadImage = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn:(data:{file:File, bucket:string,path:string}) => uploadImage(data.file,data.bucket,data.path),
+        mutationFn: (data: { file: File, bucket: string, path: string }) => uploadImage(data.file, data.bucket, data.path),
     })
-}   
+}
 
 export const useAddProduct = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (productDetails:z.infer<typeof AddProductFormSchema>) => addProduct(productDetails),
-        onSuccess:(data) => {
+        mutationFn: (productDetails: z.infer<typeof AddProductFormSchema>) => addProduct(productDetails),
+        onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_ALL_PRODUCTS],
             });
@@ -180,10 +182,10 @@ export const useAddProduct = () => {
     })
 }
 
-export const useGetProductById = (id:number) => {
+export const useGetProductById = (id: number) => {
     return useQuery({
-        queryKey:[QUERY_KEYS.GET_PRODUCT_BY_ID+id],
-        queryFn:() => getProductById(id),
-        enabled:!!id
+        queryKey: [QUERY_KEYS.GET_PRODUCT_BY_ID + id],
+        queryFn: () => getProductById(id),
+        enabled: !!id
     })
 }
