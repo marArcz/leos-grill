@@ -40,6 +40,7 @@ const SignInPage = () => {
                     variant: 'destructive'
                 })
             })
+            .finally(() => setIsSigningIn(false))
     }
 
     return (

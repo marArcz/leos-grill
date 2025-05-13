@@ -51,7 +51,6 @@ const ProductsPage = () => {
                 </div>
             </div>
             <Table>
-                {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-2/5">Product</TableHead>

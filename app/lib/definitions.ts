@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Tables } from "./supabase";
+import { Session, User } from "@supabase/supabase-js";
 
 export interface ICategory {
     id: string,
@@ -42,8 +43,10 @@ export type ProductWithCategory = Tables<'products'> & {
     category: Tables<'categories'> | null
 };
 export type OrderWithOrderItems = Tables<'orders'> & {
-    order_items: Tables<'order_items'>[] | null
+    order_items: Tables<'order_items'>[] | null,
+    user_informations: Tables<'user_informations'> | null
 };
+
 
 export const SignupFormSchema = z.object({
     firstname: z
@@ -93,7 +96,7 @@ export const AddProductFormSchema = z.object({
 })
 
 export const UpdateProductFormSchema = z.object({
-    id:z.number(),
+    id: z.number(),
     product_name: z.string(),
     price: z.number(),
     image: z.string(),
@@ -125,7 +128,8 @@ export const DeliveryInformationSchema = z.object({
 
 export interface IOrder {
     order_number: string,
-    user_id: string,
+    user_id: number,
+    account_id: string,
     status: string,
     is_cancelled: boolean,
     total: number,
@@ -154,3 +158,30 @@ export interface IFilePath {
     path: string;
     fullPath: string;
 }
+
+export type IUserSession = Session & {
+    user_information?: Tables<'user_informations'>
+}
+
+
+export const AddCategoryFormSchema = z.object({
+    category_name: z.string(),
+    category_description: z.string(),
+    image: z.string(),
+})
+
+export const UpdateCategoryFormSchema = z.object({
+    id: z.number(),
+    category_name: z.string(),
+    category_description: z.string(),
+    image: z.string(),
+})
+
+export type IOrderStatus = 'Placed' | 'Preparing' | 'Out for delivery' | 'Delivered' | 'Cancelled';
+
+export type IOrderListFilter = {
+    status?: IOrderStatus,
+    order_number?: string,
+    is_cancelled?: boolean
+}
+

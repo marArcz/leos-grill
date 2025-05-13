@@ -85,7 +85,7 @@ const Navbar = ({ filled = false }) => {
                                 <Link className="nav-link relative" href='/cart'>
                                     <ShoppingBag className='text-primary' />
                                     {cartItems && (
-                                        <span className='bg-yellow text-white px-1 w-fit h-fit text-center absolute text-sm rounded-md font-medium'>{cartItems.length}</span>
+                                        <span className='bg-yellow text-white px-1 w-fit h-fit text-center absolute text-sm rounded-md font-medium'>{cartItems.length > 0 ? cartItems.length:''}</span>
                                     )}
                                 </Link>
                             </li>

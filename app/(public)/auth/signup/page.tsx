@@ -49,6 +49,7 @@ const SignUpPage = () => {
             router.push('/');
         } catch (error) {
             setError(error as AuthError);
+            setIsCreatingAccount(false)
         }
     }
 

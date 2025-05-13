@@ -18,7 +18,7 @@ const ProductComponent = ({ product }: Props) => {
     const userSession = useGetSession();
     const [addingToCart, setAddingToCart] = useState(false);
     const { toast } = useToast()
-    const { data: existingCartItem, error: errorFetchingCartItem } = useGetCartItem(product.id)
+    const { data: existingCartItem, error: errorFetchingCartItem } = useGetCartItem(product.id,userSession?.user.id ?? null)
     const { mutateAsync: updateCartItem, isPending: pendingUpdateCartItem } = useUpdateCartItem()
     const { mutateAsync: addCartItem, isPending: pendingAddCartItem } = useAddCartItem()
 

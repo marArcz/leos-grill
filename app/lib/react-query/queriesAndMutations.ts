@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { QUERY_KEYS } from "./queryKeys"
-import { addCartItem, addDeliveryInformation, addProduct, createOrder, deleteProduct, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getOrders, getProductById, removeCartItem, updateCartItem, updateProduct, uploadImage } from "../data"
-import { AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder, UpdateProductFormSchema } from '../definitions'
+import { addCartItem, addCategory, addDeliveryInformation, addProduct, createOrder, deleteCategory, deleteProduct, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getAllOrders, getCategory, getOrders, getProductById, removeCartItem, updateCartItem, updateCategory, updateProduct, uploadImage } from "../data"
+import { AddCategoryFormSchema, AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder, IOrderListFilter, IOrderStatus, UpdateCategoryFormSchema, UpdateProductFormSchema } from '../definitions'
 import { Tables } from "../supabase"
 import { z } from "zod"
 
@@ -25,6 +25,13 @@ export const useGetCategories = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_CATEGORIES],
         queryFn: fetchCategories
+    })
+}
+
+export const useGetCategory = (id: number) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_CATEGORY, id],
+        queryFn: () => getCategory(id)
     })
 }
 
@@ -70,10 +77,10 @@ export const useDeleteProduct = () => {
     })
 }
 
-export const useGetCartItem = (productId: number) => {
+export const useGetCartItem = (productId: number, userId:string | null) => {
     return useQuery({
-        queryKey: [QUERY_KEYS.GET_CART_ITEM, productId],
-        queryFn: () => fetchCartItem(productId),
+        queryKey: [QUERY_KEYS.GET_CART_ITEM, productId, userId],
+        queryFn: () => userId ? fetchCartItem(productId, userId) : null,
         enabled: !!productId
     })
 }
@@ -149,7 +156,7 @@ export const useCreateOrder = () => {
         mutationFn: (orderData: IOrder) => createOrder(orderData),
         onSuccess: (data) => {
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_ORDER_DETAILS]
+                queryKey: [QUERY_KEYS.GET_ORDERS, QUERY_KEYS.GET_ALL_ORDERS]
             })
         }
     })
@@ -160,6 +167,13 @@ export const useGetOrders = (userId: string | null) => {
         queryKey: [QUERY_KEYS.GET_ORDERS],
         queryFn: () => userId ? getOrders(userId) : null,
         enabled: !!userId
+    })
+}
+
+export const useGetAllOrders = (filters: IOrderListFilter) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_ALL_ORDERS],
+        queryFn: () => getAllOrders(filters)
     })
 }
 
@@ -188,5 +202,39 @@ export const useGetProductById = (id: number) => {
         queryKey: [QUERY_KEYS.GET_PRODUCT_BY_ID + id],
         queryFn: () => getProductById(id),
         enabled: !!id
+    })
+}
+
+export const useAddCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (categoryData: z.infer<typeof AddCategoryFormSchema>) => addCategory(categoryData),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CATEGORIES]
+            })
+        }
+    })
+}
+export const useUpdateCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (categoryData: z.infer<typeof UpdateCategoryFormSchema>) => updateCategory(categoryData),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CATEGORIES]
+            })
+        }
+    })
+}
+export const useDeleteCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (categoryId: number) => deleteCategory(categoryId),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CATEGORIES]
+            })
+        }
     })
 }

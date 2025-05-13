@@ -1,14 +1,15 @@
 import { products } from "./dummy-data";
-import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems, ProductWithCategory } from "./definitions";
+import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderStatus, IOrderListFilter } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
 
-export const fetchProducts = async (categoryId: number):Promise<Tables<'products'>[]> => {
+export const fetchProducts = async (categoryId: number): Promise<Tables<'products'>[]> => {
     const supabase = createClient();
+    console.log('fetching: ', categoryId)
     const { data, error } = await supabase.from('products')
-    .select('*')
-    .eq('category_id', categoryId)
+        .select('*')
+        .eq('category_id', categoryId)
 
 
     if (error) {
@@ -54,13 +55,13 @@ export const updateProduct = async (productData: z.infer<typeof UpdateProductFor
     return data;
 }
 
-export const deleteProduct = async (id:number) : Promise<Boolean> => {
+export const deleteProduct = async (id: number): Promise<Boolean> => {
     const supabase = createClient();
-    const {error, data} = await supabase.from('products')
+    const { error, data } = await supabase.from('products')
         .delete()
         .eq('id', id);
 
-    if(error){
+    if (error) {
         console.error('Error deleting product: ', error);
         throw error;
     }
@@ -104,11 +105,12 @@ export const fetchCart = async (userId: string, count: number = 10, start: numbe
     return data as CartItemWithProduct[];
 }
 
-export const fetchCartItem = async (productId: number): Promise<CartItemWithProduct | null> => {
+export const fetchCartItem = async (productId: number, userId:string): Promise<CartItemWithProduct | null> => {
     const supabase = createClient();
     let { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
         .eq('product_id', productId)
+        .eq('user_id', userId)
         .single();
 
     if (error) {
@@ -117,11 +119,11 @@ export const fetchCartItem = async (productId: number): Promise<CartItemWithProd
     }
     return data as CartItemWithProduct;
 }
-export const fetchAllCart = async (user_id:string): Promise<CartItemWithProduct[] | null> => {
+export const fetchAllCart = async (user_id: string): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
     let { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
-        .eq('user_id',user_id)
+        .eq('user_id', user_id)
         .order('created_at')
         .returns<CartItemWithProduct[]>();
 
@@ -215,7 +217,7 @@ export const addDeliveryInformation = async (deliveryInfo: z.infer<typeof Delive
 export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> | null> => {
     const supabase = createClient();
     // create order items from cart
-    const { data: cartItems, error: errorCartItems } = await supabase.from('cart_items').select('*, product:products(*)').eq('user_id', orderData.user_id)
+    const { data: cartItems, error: errorCartItems } = await supabase.from('cart_items').select('*, product:products(*)').eq('user_id', orderData.account_id)
     console.log('creating order, cartitems: ', cartItems)
     if (cartItems) {
         const { data: order, error } = await supabase.from('orders').insert(orderData).select().single();
@@ -241,7 +243,7 @@ export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> |
 
         return order;
     }
-    return null;
+    throw new Error('No cart items found')
 }
 
 export const getOrders = async (userId: string): Promise<Tables<'orders'>[] | null> => {
@@ -266,7 +268,7 @@ export const uploadImage = async (file: File, bucket: string, path: string): Pro
 
     if (!error) {
         // File exists, return its public URL
-        const { data:publicURL } = supabase.storage.from(bucket).getPublicUrl(path)
+        const { data: publicURL } = supabase.storage.from(bucket).getPublicUrl(path)
         return publicURL.publicUrl
     }
 
@@ -298,7 +300,7 @@ export const addProduct = async (productDetails: z.infer<typeof AddProductFormSc
         .insert(productDetails)
         .select()
         .single();
-        
+
 
     if (error) {
         console.error(error);
@@ -322,12 +324,109 @@ export const getCategories = async (): Promise<Tables<'categories'>[] | null> =>
     return data;
 }
 
-export const getProductById = async (id:number):Promise<ProductWithCategory | null> => {
+export const addCategory = async (categoryData: z.infer<typeof AddCategoryFormSchema>): Promise<Tables<'categories'>> => {
     const supabase = createClient();
-    const {data, error} = await supabase.from("products").select("*, category:categories(*)").eq("id",id).returns<ProductWithCategory>().single();
+    const { data, error } = await supabase.from("categories")
+        .insert(categoryData)
+        .select()
+        .single();
 
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
+export const updateCategory = async (categoryData: z.infer<typeof UpdateCategoryFormSchema>): Promise<Tables<'categories'>> => {
+    const supabase = createClient();
+    const { id, ...categoryDetails } = categoryData;
+
+    const { data, error } = await supabase.from("categories")
+        .update(categoryDetails)
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+export const deleteCategory = async (categoryId: number): Promise<boolean> => {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.from("categories")
+        .delete()
+        .eq('id', categoryId)
+
+    if (error) {
+        throw error;
+    }
+
+    return true;
+}
+
+export const getProductById = async (id: number): Promise<ProductWithCategory | null> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from("products").select("*, category:categories(*)").eq("id", id).returns<ProductWithCategory>().single();
+
+    if (error) {
+        console.error("Error fetching product details: ", error);
+    }
+
+    return data;
+}
+
+export const getCategory = async (id: number): Promise<Tables<'categories'> | null> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from("categories").select("*").eq("id", id).single();
+
+    if (error) {
+        console.error("Error fetching category details: ", error);
+    }
+
+    return data;
+}
+
+export const getAllOrders = async (filters: IOrderListFilter): Promise<OrderWithOrderItems[] | null> => {
+    const supabase = createClient();
+
+    let query = supabase.from('orders')
+        .select('*, order_items(*), user_informations(*)')
+
+    if (filters.status !== undefined) {
+        query = query.eq('status', filters.status)
+    }
+
+    if (filters.order_number !== undefined) {
+        query = query.eq('order_number', filters.order_number)
+    }
+
+    if (filters.is_cancelled !== undefined) {
+        query = query.eq('is_cancelled', filters.is_cancelled)
+    }
+
+    const { data, error } = await query.returns<OrderWithOrderItems[]>()
+
+
+    if (error) {
+        throw error
+    }
+
+    return data;
+}
+
+export const getUserInformation = async (accountId: string) : Promise<Tables<'user_informations'>> => {
+    const supabase = createClient();
+    const {data, error} = await supabase.from('user_informations')
+        .select('*')
+        .eq('account_id',accountId)
+        .single()
+    
     if(error){
-        console.error("Error fetching product details: " , error);
+        throw error;
     }
 
     return data;

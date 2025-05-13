@@ -1,6 +1,6 @@
 'use client';
 import React from "react";
-import { Dashboard, Group, Settings, ExitToApp, Inventory as ProductsIcon } from "@mui/icons-material";
+import { Dashboard, Group, Settings, ExitToApp, Inventory as ProductsIcon, Category as CategoriesIcon, PlaylistAddCheck as OrdersIcon } from "@mui/icons-material";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -49,6 +49,28 @@ const AdminSidebar: React.FC = () => {
                         >
                             <ProductsIcon />
                             <span>Products</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
+                            href="/admin/categories"
+                            className={clsx("flex items-center space-x-3 p-2 rounded hover:bg-zinc-700", {
+                                "bg-zinc-200 text-yellow bg-opacity-10": doesPathMatches('/admin/categories',pathName)
+                            })}
+                        >
+                            <CategoriesIcon />
+                            <span>Categories</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
+                            href="/admin/orders"
+                            className={clsx("flex items-center space-x-3 p-2 rounded hover:bg-zinc-700", {
+                                "bg-zinc-200 text-yellow bg-opacity-10": doesPathMatches('/admin/orders',pathName)
+                            })}
+                        >
+                            <OrdersIcon />
+                            <span>Orders</span>
                         </Link>
                     </li>
                     <li>

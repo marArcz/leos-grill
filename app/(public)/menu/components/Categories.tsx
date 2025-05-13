@@ -19,7 +19,7 @@ const Categories = ({ activeCategory, setActiveCategory,categories }: Props) => 
                 <li onClick={() => setActiveCategory(category)} key={index} className={clsx("text-center relative pb-3 cursor-pointer transition-all", {
                     'text-yellow after:content-normal': category == activeCategory
                 })}>
-                    <img src="" className={clsx("bg-gray-300 mx-auto rounded-full xl:size-32 md:size-20 size-14", {
+                    <img src={activeCategory?.image??''} className={clsx("bg-gray-300 mx-auto rounded-full xl:size-32 md:size-20 size-14", {
                         " border-yellow border-2": category == activeCategory
                     })} alt="" />
                     <p className="mt-4 text-lg text-center">{category.category_name}</p>

@@ -32,7 +32,7 @@ const CheckoutPage = () => {
     const [showDeliveryInfoDialog, setShowDeliveryInfoDialog] = useState(false)
     const session = useGetSession();
     const { data: deliveryInfos, isPending: fetchingDeliveryInfos, refetch: refetchDeliveryInfos } = useGetDeliveryInfos(session?.user.id || null)
-    const {mutateAsync:createOrder} = useCreateOrder();
+    const {mutateAsync:createOrder, isPending:isCreatingOrder} = useCreateOrder();
     const { toast } = useToast();
     const { data: cartItems } = useGetAllCartItems(session?.user.id ?? null);
 
@@ -74,12 +74,13 @@ const CheckoutPage = () => {
         }
         else {
             // on proceed
-            if (session?.user.id) {
+            if (session?.user_information) {
                 try {
                     console.log('creating order')
                     const data = await createOrder({
                         order_number: generateOrderNumber(),
-                        user_id: session?.user.id,
+                        account_id:session.user.id,
+                        user_id: session.user_information.id,
                         status: OrderStatus.Pending,
                         is_cancelled: false,
                         total: grandTotal,
@@ -88,6 +89,9 @@ const CheckoutPage = () => {
                         delivery_information_id: deliveryInfoId
                     })
                     if (data) {
+                        toast({
+                            title: 'Successfully placed order!'
+                        })
                         if (paymentMethod == 'cod') {
                             router.push(`/orders/${data.id}`)
                         } else {
@@ -214,7 +218,7 @@ const CheckoutPage = () => {
                         </RadioGroup>
                     </div>
                     <div className="mt-14">
-                        <button type='button' onClick={onProceed} className='btn bg-orange px-4 py-3 uppercase rounded-md'>Proceed to payment</button>
+                        <button type='button' disabled={isCreatingOrder} onClick={onProceed} className='btn bg-orange px-4 py-3 uppercase rounded-md'>Proceed to payment</button>
                     </div>
                 </div>
             </div>

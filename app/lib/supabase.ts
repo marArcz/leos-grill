@@ -238,6 +238,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          account_id: string | null
           created_at: string
           delivery_information_id: number | null
           id: number
@@ -247,9 +248,10 @@ export type Database = {
           payment_method: string | null
           status: string | null
           total: number | null
-          user_id: string | null
+          user_id: number | null
         }
         Insert: {
+          account_id?: string | null
           created_at?: string
           delivery_information_id?: number | null
           id?: number
@@ -259,9 +261,10 @@ export type Database = {
           payment_method?: string | null
           status?: string | null
           total?: number | null
-          user_id?: string | null
+          user_id?: number | null
         }
         Update: {
+          account_id?: string | null
           created_at?: string
           delivery_information_id?: number | null
           id?: number
@@ -271,7 +274,7 @@ export type Database = {
           payment_method?: string | null
           status?: string | null
           total?: number | null
-          user_id?: string | null
+          user_id?: number | null
         }
         Relationships: [
           {
@@ -279,6 +282,13 @@ export type Database = {
             columns: ["delivery_information_id"]
             isOneToOne: false
             referencedRelation: "delivery_informations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_informations"
             referencedColumns: ["id"]
           },
         ]
@@ -390,25 +400,31 @@ export type Database = {
       }
       user_informations: {
         Row: {
+          account_id: string
           created_at: string
           firstname: string | null
           id: number
           lastname: string | null
           photo: string | null
+          role: string | null
         }
         Insert: {
+          account_id: string
           created_at?: string
           firstname?: string | null
           id?: number
           lastname?: string | null
           photo?: string | null
+          role?: string | null
         }
         Update: {
+          account_id?: string
           created_at?: string
           firstname?: string | null
           id?: number
           lastname?: string | null
           photo?: string | null
+          role?: string | null
         }
         Relationships: []
       }

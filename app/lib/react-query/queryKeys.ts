@@ -16,10 +16,12 @@ export enum QUERY_KEYS {
     GET_CATEGORIES = 'getCategories',
     
     GET_ORDERS = 'getOrders',
+    GET_ALL_ORDERS = 'getAllOrders',
     GET_ORDER_DETAILS = 'getOrderDetails',
     GET_PRODUCTS = 'getProducts',
     GET_ALL_PRODUCTS = 'getAllProducts',
     GET_PRODUCT_BY_ID = 'getProductById=',
+    GET_CATEGORY = 'getCategory',
     GET_DELIVERY_INFORMATIONS = 'getDeliveryInformations',
     CREATE_ORDER = 'createOrder',
   } 
