@@ -46,6 +46,9 @@ const SignInPage = () => {
         signin(formData)
             .then((success) => {
                 if(success){
+                    toast({
+                        title:'Success'
+                    })
                     router.push('/admin/')
                 }else{
                     // alert('failed to login!');
@@ -56,6 +59,7 @@ const SignInPage = () => {
                     })
                 }
             })
+            .catch(error => console.log('error admin signin: ', error))
             .finally(() => setIsSigningIn(false))
     }
 

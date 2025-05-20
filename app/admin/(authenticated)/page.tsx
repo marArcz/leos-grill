@@ -2,10 +2,10 @@
 import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js';
 import React, { useEffect, useState } from 'react'
-import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon } from '@mui/icons-material'
+import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon, KeyboardArrowDown } from '@mui/icons-material'
 import { formatToCurrency } from '@/app/lib/utils';
 import { useGetSession } from '@/hooks/use-get-session';
-import { IOrderListFilter } from '@/app/lib/definitions';
+import { IOrderListFilter, orderStatusList } from '@/app/lib/definitions';
 import { useGetAllOrders } from '@/app/lib/react-query/queriesAndMutations';
 import clsx from 'clsx';
 import {
@@ -17,6 +17,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 const Dashboard = () => {
     const supabase = createClient();
     const [page, setPage] = useState(1)
@@ -66,52 +67,77 @@ const Dashboard = () => {
             </div>
             <div className="mt-7">
                 <p className='text-md text-white mb-3'>Orders</p>
-                {orders && orders.map((order, index) => (
-                    <div key={order.id} className={clsx("mb-3 rounded-2xl  border p-3", {
-                        'bg-zinc-800': index == 0,
-                    })}>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <div className="text-center w-max mb-2 mx-auto bg-orange rounded-xl px-3">
-                                    {order.status}
-                                </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Profile</DropdownMenuItem>
-                                <DropdownMenuItem>Billing</DropdownMenuItem>
-                                <DropdownMenuItem>Team</DropdownMenuItem>
-                                <DropdownMenuItem>Subscription</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-
-                        <div className="flex gap-3">
-                            <img src={order.user_informations?.photo || '/images/profile-pic.jpg'} alt="" className='rounded-full size-10 object-cover' />
-                            <div className='mt-2 '>
-                                <p>{order.user_informations?.firstname + ' ' + order.user_informations?.lastname}</p>
-                                <div className="mt-3">
-                                    <p className='text-zinc-400 text-sm'>Order details</p>
-                                    <div className="mt-2">
-                                        {order.order_items && order.order_items.map((orderItem) => (
-                                            <div key={orderItem.id} className='grid grid-cols-3 justify-between items-center'>
-                                                <div>
-                                                    <p>{orderItem.product_name} <span className='text-orange'>x {orderItem.quantity}</span></p>
-                                                </div>
-                                                <div className='text-center'>. . . . . . . . . </div>
-                                                <p>
-                                                    {formatToCurrency(orderItem.product_price ?? 0)}
-                                                </p>
+                <div className="flex gap-4">
+                    <div className='flex-1 mt-3'>
+                        <p className='text-yellow mb-3 text-lg'>Active</p>
+                        {orders && orders.map((order, index) => (
+                            <div key={order.id} className={clsx("mb-3 rounded-2xl  border p-3", {
+                                'bg-zinc-800': index == 0,
+                            })}>
+                                <div className="mx-auto text-center">
+                                    <Dialog>
+                                        <DialogTrigger className='' asChild>
+                                            <button type='button' className='bg-orange px-3 rounded-full'>{order.status}</button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle className=''>Update Status</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="mt-3">
+                                                {orderStatusList.map((orderStatus, index) => (
+                                                    <Button key={index} type='button' variant="ghost">{orderStatus}</Button>
+                                                ))}
                                             </div>
-                                        ))}
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                                <div className="flex gap-3 w-full ">
+                                    <img src={order.user_informations?.photo || '/images/profile-pic.jpg'} alt="" className='rounded-full size-10 object-cover' />
+                                    <div className='mt-2 flex-1'>
+                                        <p>{order.user_informations?.firstname + ' ' + order.user_informations?.lastname}</p>
+                                        <div className="mt-3">
+                                            <div className="bg-zinc-900 rounded-lg p-4 w-full">
+                                                <p className='text-zinc-400 text-sm'>Order details</p>
+                                                <p className='text-sm text-yellow'>#{order.order_number}</p>
+                                                <div className="mt-2">
+                                                    {order.order_items && order.order_items.map((orderItem) => (
+                                                        <div key={orderItem.id} className='grid grid-cols-3 justify-between items-center'>
+                                                            <div>
+                                                                <p>{orderItem.product_name} <span className='text-orange'>x {orderItem.quantity}</span></p>
+                                                            </div>
+                                                            <div className=''>
+                                                                {/* <div className='border-white border-dotted border-2 p-0'></div> */}
+                                                                <hr className='border-dotted border-collapse border-4' />
+                                                            </div>
+                                                            <p className='text-end'>
+                                                                {formatToCurrency(orderItem.product_price ?? 0)}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="mt-2">
+                                                    <p className='text-orange'>Total: {formatToCurrency(order.total ?? 0)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-2">
+                                                {order.delivery_informations && (
+                                                    <>
+
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
+                            </div>
+                        ))}
                     </div>
-                ))}
+                    <div className="w-1/4">
+                        <p className='text-yellow mb-3 text-lg'>Out for delivery</p>
+                    </div>
+                </div>
                 {(!orders || orders.length == 0) && (
                     <p className='mt-3 text-zinc-400'>Nothing to show.</p>
                 )}

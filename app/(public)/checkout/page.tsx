@@ -43,7 +43,6 @@ const CheckoutPage = () => {
             console.log('cart items: ', cartItems)
             let total = 0;
             for (let cartItem of cartItems) {
-                // console.log('cartitem total: ', (cartItem.quantity) * (cartItem.product?.price ?? 0))
                 total += (cartItem.quantity ?? 0) * (cartItem.product?.price ?? 0)
             }
             setCartTotal(total)
@@ -76,7 +75,7 @@ const CheckoutPage = () => {
             // on proceed
             if (session?.user_information) {
                 try {
-                    console.log('creating order')
+                    console.log('creating order 1')
                     const data = await createOrder({
                         order_number: generateOrderNumber(),
                         account_id:session.user.id,
@@ -218,7 +217,9 @@ const CheckoutPage = () => {
                         </RadioGroup>
                     </div>
                     <div className="mt-14">
-                        <button type='button' disabled={isCreatingOrder} onClick={onProceed} className='btn bg-orange px-4 py-3 uppercase rounded-md'>Proceed to payment</button>
+                        <button type='button' disabled={isCreatingOrder} onClick={onProceed} className='btn bg-orange px-4 py-3 uppercase rounded-md'>
+                            {isCreatingOrder?'Please wait...':'Proceed to payment'}
+                        </button>
                     </div>
                 </div>
             </div>

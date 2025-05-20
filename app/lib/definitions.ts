@@ -44,7 +44,8 @@ export type ProductWithCategory = Tables<'products'> & {
 };
 export type OrderWithOrderItems = Tables<'orders'> & {
     order_items: Tables<'order_items'>[] | null,
-    user_informations: Tables<'user_informations'> | null
+    user_informations: Tables<'user_informations'> | null,
+    delivery_informations:Tables<'delivery_informations'> | null
 };
 
 
@@ -183,5 +184,14 @@ export type IOrderListFilter = {
     status?: IOrderStatus,
     order_number?: string,
     is_cancelled?: boolean
+}
+
+export const orderStatusList = ['Placed', 'Preparing', 'Out for delivery', 'Delivered', 'Cancelled'];
+export const orderStatusObj = {
+    PLACED:'Placed',
+    PREPARING:'Preparing',
+    OUT_FOR_DELIVERY:'Out for delivery',
+    DELIVERED:'Delivered',
+    CANCELLED:'Cancelled'
 }
 

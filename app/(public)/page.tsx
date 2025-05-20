@@ -1,18 +1,22 @@
+'use client';
+
 import Image from "next/image";
 import Navbar from "../ui/Navbar";
 import Link from "next/link";
 import { jotiOne } from "../ui/fonts";
 import { Facebook, Instagram, Map as MapIcon, Phone } from "@mui/icons-material";
-import { categories, products } from "../lib/dummy-data";
 import { fetchBestSellers } from "../lib/data";
 import ProductComponent from "./components/ProductComponent";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useGetCategories } from "../lib/react-query/queriesAndMutations";
+import { useGetSession } from "@/hooks/use-get-session";
 
-export default async function Home() {
+export default function Home() {
     const bestSellers = fetchBestSellers();
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser();
+    const session = useGetSession();
+
+    const {data:categories, isPending:isFetchingCategories} = useGetCategories();
 
     return (
         <>
@@ -32,11 +36,11 @@ export default async function Home() {
                     <div className="flex-1 border-spacing-x-60 border-2 border-dashed h-[1px] border-gray-300"></div>
                 </div>
                 {/* menu categories */}
-                <div className="mt-8 flex flex-wrap gap-20 md:justify-start justify-center">
-                    {categories.map((category, index) => (
-                        <Link href="/menu" key={index} className="text-center">
-                            <img src="" className="bg-gray-300 mx-auto rounded-full size-32 " alt="" />
-                            <p className="mt-4">{category.name}</p>
+                <div className="mt-8 flex flex-wrap gap-20 md:justify-center justify-center">
+                    {categories && categories.map((category, index) => (
+                        <Link href="/menu" key={category.id} className="text-center">
+                            <img src={category.image ?? ''} className="bg-gray-300 mx-auto rounded-full size-32 " alt="" />
+                            <p className="mt-4">{category.category_name}</p>
                         </Link>
                     ))}
                 </div>

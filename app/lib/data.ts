@@ -1,5 +1,5 @@
 import { products } from "./dummy-data";
-import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderStatus, IOrderListFilter } from "./definitions";
+import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderStatus, IOrderListFilter, orderStatusList, orderStatusObj } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Database, Tables } from "./supabase";
 import { z } from "zod";
@@ -105,7 +105,7 @@ export const fetchCart = async (userId: string, count: number = 10, start: numbe
     return data as CartItemWithProduct[];
 }
 
-export const fetchCartItem = async (productId: number, userId:string): Promise<CartItemWithProduct | null> => {
+export const fetchCartItem = async (productId: number, userId: string): Promise<CartItemWithProduct | null> => {
     const supabase = createClient();
     let { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
@@ -215,6 +215,7 @@ export const addDeliveryInformation = async (deliveryInfo: z.infer<typeof Delive
 }
 
 export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> | null> => {
+    console.log('creating order 2')
     const supabase = createClient();
     // create order items from cart
     const { data: cartItems, error: errorCartItems } = await supabase.from('cart_items').select('*, product:products(*)').eq('user_id', orderData.account_id)
@@ -228,7 +229,7 @@ export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> |
         }
         for (let cartItem of cartItems) {
             cartItem = cartItem as CartItemWithProduct;
-            await supabase.from('order_items').insert({
+            const { error } = await supabase.from('order_items').insert({
                 order_id: order.id,
                 product_id: cartItem.product_id,
                 product_name: cartItem.product?.product_name,
@@ -236,11 +237,16 @@ export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> |
                 product_image: cartItem.product?.image,
                 quantity: cartItem.quantity
             })
-
-            await supabase.from('cart_items').delete()
-                .eq('id', cartItem.id);
+            if (error) {
+                console.error('error in cart item: ', error)
+                throw error;
+            }
         }
 
+        if (order.account_id) {
+            await supabase.from('cart_items').delete()
+                .eq('user_id', order.account_id)
+        }
         return order;
     }
     throw new Error('No cart items found')
@@ -394,7 +400,7 @@ export const getAllOrders = async (filters: IOrderListFilter): Promise<OrderWith
     const supabase = createClient();
 
     let query = supabase.from('orders')
-        .select('*, order_items(*), user_informations(*)')
+        .select('*, order_items(*), user_informations(*), delivery_informations(*)')
 
     if (filters.status !== undefined) {
         query = query.eq('status', filters.status)
@@ -418,14 +424,58 @@ export const getAllOrders = async (filters: IOrderListFilter): Promise<OrderWith
     return data;
 }
 
-export const getUserInformation = async (accountId: string) : Promise<Tables<'user_informations'>> => {
+export const getActiveOrders = async (): Promise<OrderWithOrderItems[] | null> => {
     const supabase = createClient();
-    const {data, error} = await supabase.from('user_informations')
+    const { data, error } = await supabase.from('orders')
+        .select()
+        .neq('status', orderStatusObj.OUT_FOR_DELIVERY)
+        .neq('status', orderStatusObj.CANCELLED)
+        .neq('status', orderStatusObj.DELIVERED)
+        .returns<OrderWithOrderItems[]>()
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
+export const getOutForDeliveries = async (): Promise<OrderWithOrderItems[] | null> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from('orders')
+        .select()
+        .eq('status', orderStatusObj.OUT_FOR_DELIVERY)
+        .returns<OrderWithOrderItems[]>()
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
+export const getUserInformation = async (accountId: string): Promise<Tables<'user_informations'>> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from('user_informations')
         .select('*')
-        .eq('account_id',accountId)
+        .eq('account_id', accountId)
         .single()
-    
-    if(error){
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
+export const updateOrder = async (orderData: Tables<'orders'>): Promise<Tables<'orders'>> => {
+    const supabase = createClient();
+    const { id, ...orderDetails } = orderData
+    const { data, error } = await supabase.from('orders')
+        .update(orderDetails)
+        .eq('id', id)
+        .select()
+        .single()
+
+    if (error) {
         throw error;
     }
 

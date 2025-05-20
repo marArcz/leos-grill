@@ -70,7 +70,7 @@ const AdminSidebar: React.FC = () => {
                             })}
                         >
                             <OrdersIcon />
-                            <span>Orders</span>
+                            <span>Order History</span>
                         </Link>
                     </li>
                     <li>

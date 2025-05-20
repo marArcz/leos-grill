@@ -18,37 +18,51 @@ import {
 import { Session, User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { useGetAllCartItems } from '../lib/react-query/queriesAndMutations'
+import { useGetSession } from '@/hooks/use-get-session'
+import { toast } from '@/hooks/use-toast'
 
 const Navbar = ({ filled = false }) => {
-    const [session, setSession] = useState<Session | null>(null)
+    const session = useGetSession();
     const router = useRouter();
     const supabase = createClient()
-    const { data: cartItems, isPending:cartItemsLoading } = useGetAllCartItems(session?.user.id ?? null);
-    useEffect(() => {
-        // Check initial session
-        const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            setSession(session)
-        }
-        getSession()
-        // Listen for auth state changes
-        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-            console.log("Auth event:", event)  // Optional: log auth events (SIGNED_IN, SIGNED_OUT, etc.)
-            setSession(session)
-        })
+    const { data: cartItems, isPending: cartItemsLoading } = useGetAllCartItems(session?.user.id ?? null);
+    // useEffect(() => {
+    //     // Check initial session
+    //     const getSession = async () => {
+    //         const { data: { session }, error } = await supabase.auth.getSession()
+    //         if(error){
+    //             console.log('error auth: ', error)
+    //         }
+    //         setSession(session)
+    //     }
+    //     getSession()
+    //     // Listen for auth state changes
+    //     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    //         console.log("Auth event:", event)  // Optional: log auth events (SIGNED_IN, SIGNED_OUT, etc.)
+    //         setSession(session)
+    //     })
 
-        // Cleanup on unmount
-        return () => {
-            authListener?.subscription.unsubscribe()
-        }
-    }, [supabase])
+    //     // Cleanup on unmount
+    //     return () => {
+    //         authListener?.subscription.unsubscribe()
+    //     }
+    // }, [supabase])
 
     const handleSignOut = async () => {
+        toast({
+            title: 'Signing out'
+        })
         const { error } = await supabase.auth.signOut();
 
         if (error) {
-            console.error("Error signing out:", error.message)
+            toast({
+                title: error.message
+            })
+            console.error("Error signing out:", error)
         } else {
+            toast({
+                title: 'Signed out'
+            })
             // Redirect to a sign-in or home page after successful sign-out
             router.push('/auth/signin')
         }
@@ -85,7 +99,7 @@ const Navbar = ({ filled = false }) => {
                                 <Link className="nav-link relative" href='/cart'>
                                     <ShoppingBag className='text-primary' />
                                     {cartItems && (
-                                        <span className='bg-yellow text-white px-1 w-fit h-fit text-center absolute text-sm rounded-md font-medium'>{cartItems.length > 0 ? cartItems.length:''}</span>
+                                        <span className='bg-yellow text-white px-1 w-fit h-fit text-center absolute text-sm rounded-md font-medium'>{cartItems.length > 0 ? cartItems.length : ''}</span>
                                     )}
                                 </Link>
                             </li>
@@ -100,6 +114,9 @@ const Navbar = ({ filled = false }) => {
                                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem>Profile</DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            <Link href='/orders'>Orders</Link>
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

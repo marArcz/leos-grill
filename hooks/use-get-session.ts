@@ -7,10 +7,12 @@ import { useEffect, useState } from 'react'
 export const useGetSession = () => {
     const [session, setSession] = useState<IUserSession | null>(null)
     const supabase = createClient()
+    
     useEffect(() => {
         // Check initial session
         const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
+            const { data: { session }, error } = await supabase.auth.getSession()
+            console.log('use-get-session:', error)
             if (session?.user) {
                 const user_information = await getUserInformation(session.user.id)
                 console.log('user info: ', user_information)

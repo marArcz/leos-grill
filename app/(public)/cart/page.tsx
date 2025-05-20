@@ -74,7 +74,7 @@ const CartPage = () => {
                         <>
                             <div className='space-y-3'>
                                 {cartItems.map((cartItem, index) => (
-                                    <div className='grid grid-cols-6 items-center gap-3 border-b pb-3'>
+                                    <div key={cartItem.id} className='grid grid-cols-6 items-center gap-3 border-b pb-3'>
                                         <div className='flex items-center gap-4 col-span-2'>
                                             <img src={cartItem.product?.image ?? ''} className='size-20 object-cover' alt="" />
                                             <p className=''>{cartItem.product?.product_name}</p>
