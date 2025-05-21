@@ -1,10 +1,12 @@
-import { IAddToCart } from "@/app/lib/definitions"
+import { IAddToCart } from "@/app/lib/definitions";
 import { useAddCartItem, useGetCartItem, useUpdateCartItem } from "@/app/lib/react-query/queriesAndMutations";
-import { createClient } from "@/utils/supabase/client"
+import { useGetSession } from "@/hooks/use-get-session";
+import { createClient } from "@/utils/supabase/client";
 
 export const addTocart = async (cart: IAddToCart) => {
     const supabase = createClient();
-    const { data: cartItem, error: errorFetchingCartItem } = useGetCartItem(cart.product_id)
+    const session = useGetSession()
+    const { data: cartItem, error: errorFetchingCartItem } = useGetCartItem(cart.product_id, session?.user.id ?? null)
     const { mutateAsync: updateCartItem, isPending: pendingUpdateCartItem } = useUpdateCartItem()
     const { mutateAsync: addCartItem, isPending: pendingAddCartItem } = useAddCartItem()
 
