@@ -32,9 +32,9 @@ import { useRouter } from 'next/navigation';
 const UpdateProductPage = ({ params }: { params: { id: number } }) => {
     const [uploadingImage, setUploadingImage] = useState(false)
     const { data: categories, isPending: getCategoriesLoading } = useGetCategories();
-    const { data: productDetails, error: fetchingError, isPending: isFetchingProduct } = useGetProductById(params.id);
+    const { data: productDetails, isPending: isFetchingProduct } = useGetProductById(params.id);
     const router = useRouter();
-    const { mutateAsync: updateProduct, isPending: isUpdatingProduct } = useUpdateProduct();
+    const { isPending: isUpdatingProduct } = useUpdateProduct();
 
     const form = useForm<z.infer<typeof UpdateProductFormSchema>>({
         resolver: zodResolver(UpdateProductFormSchema),
@@ -61,9 +61,8 @@ const UpdateProductPage = ({ params }: { params: { id: number } }) => {
     }, [isFetchingProduct, productDetails,categories])
 
 
-    const onSubmit = async (formData: z.infer<typeof UpdateProductFormSchema>) => {
+    const onSubmit = async () => {
         try {
-            const data = await updateProduct(formData);
             toast({
                 title: 'Successfully updated products'
             })

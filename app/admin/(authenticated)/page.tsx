@@ -1,6 +1,6 @@
 'use client';
-import React, { useState } from 'react'
-import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon } from '@mui/icons-material'
+import { useState } from 'react';
+import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon } from '@mui/icons-material';
 import { formatToCurrency } from '@/app/lib/utils';
 import { useGetSession } from '@/hooks/use-get-session';
 import { IOrderListFilter, orderStatusList, OrderWithOrderItems } from '@/app/lib/definitions';
@@ -30,7 +30,10 @@ const Dashboard = () => {
                 status
             })
 
+            console.log(data)
+
             refetchActiveOrders()
+
             refetchOutForDeliveries()
 
             toast({
@@ -44,30 +47,6 @@ const Dashboard = () => {
         }
     }
 
-    // useEffect(() => {
-    //         const channel = supabase
-    //             .channel('order-details')
-    //             .on(
-    //                 'postgres_changes',
-    //                 {
-    //                     event: 'insert',
-    //                     schema: 'public',
-    //                     table: 'orders',
-    //                 },
-    //                 () => {
-    //         toast({title:'refetch'})
-    
-    //                     // Refetch order details when any change occurs
-    //                     // @ts-ignore
-    //                     refetch()
-    //                 }
-    //             )
-    //             .subscribe()
-    
-    //         return () => {
-    //             channel.unsubscribe()
-    //         }
-    //     }, [])
     return (
         <div className='p-2'>
             <div className="text-center mt-3">

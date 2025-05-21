@@ -1,10 +1,6 @@
-import { SignupFormSchema } from '@/app/lib/definitions'
 import { koulen } from '@/app/ui/fonts'
 import Link from 'next/link'
 import React from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from "@hookform/resolvers/zod"
 
 const SignUpPage = () => {
 

@@ -34,7 +34,7 @@ const CheckoutPage = () => {
         if (cartItems) {
             console.log('cart items: ', cartItems)
             let total = 0;
-            for (let cartItem of cartItems) {
+            for (const cartItem of cartItems) {
                 total += (cartItem.quantity ?? 0) * (cartItem.product?.price ?? 0)
             }
             setCartTotal(total)

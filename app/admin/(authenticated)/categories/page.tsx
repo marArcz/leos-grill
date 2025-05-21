@@ -9,7 +9,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const CategoriesPage = () => {
-    const { data: categories, isPending: isFetchingCategories } = useGetCategories();
+    const { data: categories } = useGetCategories();
     const { mutateAsync: deleteCategory, isPending: isDeletingCategory } = useDeleteCategory();
     
     const handleDeleteCategory = async (id: number) => {
@@ -47,7 +47,7 @@ const CategoriesPage = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {categories && categories.map((category, index) => (
+                    {categories && categories.map((category) => (
                         <TableRow key={category.id}>
                             <TableCell>
                                 <img src={category.image ?? ''} className='w-full rounded' alt="" />

@@ -2,7 +2,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-import React from 'react'
 import { Menu } from '@mui/icons-material';
 import { useGetSession } from '@/hooks/use-get-session';
 
