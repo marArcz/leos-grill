@@ -1,11 +1,10 @@
 'use client';
 
-import { useDeleteProduct, useGetCategories, useGetProductById, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
+import { useGetCategories, useGetProductById, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
 import React, { useEffect, useState } from 'react'
 import {
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,

@@ -1,7 +1,7 @@
 import { products } from "./dummy-data";
-import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddProduct, IAddToCart, ICategory, IFilePath, IOrder, IProduct, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderStatus, IOrderListFilter, orderStatusList, orderStatusObj } from "./definitions";
+import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddToCart, IOrder, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderListFilter, orderStatusObj } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
-import { Database, Tables } from "./supabase";
+import { Tables } from "./supabase";
 import { z } from "zod";
 
 export const fetchProducts = async (categoryId: number): Promise<Tables<'products'>[]> => {
@@ -55,7 +55,7 @@ export const updateProduct = async (productData: z.infer<typeof UpdateProductFor
     return data;
 }
 
-export const deleteProduct = async (id: number): Promise<Boolean> => {
+export const deleteProduct = async (id: number): Promise<boolean> => {
     const supabase = createClient();
     const { error, data } = await supabase.from('products')
         .delete()
@@ -75,7 +75,7 @@ export const fetchBestSellers = () => {
 
 export const fetchCategories = async () => {
     const supabase = createClient();
-    let { data, error } = await supabase.from('categories').select('*');
+    const { data, error } = await supabase.from('categories').select('*');
     console.log('fetched categories: ', data);
 
 
@@ -89,7 +89,7 @@ export const fetchCategories = async () => {
 
 export const fetchCart = async (userId: string, count: number = 10, start: number = 0): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
-    let { data, error } = await supabase.from('cart_items')
+    const { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
         .eq('user_id', userId)
         .order('created_at')
@@ -107,7 +107,7 @@ export const fetchCart = async (userId: string, count: number = 10, start: numbe
 
 export const fetchCartItem = async (productId: number, userId: string): Promise<CartItemWithProduct | null> => {
     const supabase = createClient();
-    let { data, error } = await supabase.from('cart_items')
+    const { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
         .eq('product_id', productId)
         .eq('user_id', userId)
@@ -121,7 +121,7 @@ export const fetchCartItem = async (productId: number, userId: string): Promise<
 }
 export const fetchAllCart = async (user_id: string): Promise<CartItemWithProduct[] | null> => {
     const supabase = createClient();
-    let { data, error } = await supabase.from('cart_items')
+    const { data, error } = await supabase.from('cart_items')
         .select('*, product:products(*)')
         .eq('user_id', user_id)
         .order('created_at')
@@ -270,7 +270,7 @@ export const getOrders = async (userId: string): Promise<OrderWithOrderItems[] |
     return data;
 }
 
-export const uploadImage = async (file: File, bucket: string, path: string): Promise<String> => {
+export const uploadImage = async (file: File, bucket: string, path: string): Promise<string> => {
     if (!file) throw new Error('No file provided');
     const supabase = createClient();
 

@@ -5,9 +5,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from './button'
 import { useUploadImage } from '@/app/lib/react-query/queriesAndMutations'
 
 type IProps = {

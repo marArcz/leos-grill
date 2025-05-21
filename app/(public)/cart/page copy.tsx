@@ -1,13 +1,11 @@
 "use client";
 
-import { fetchCart } from '@/app/lib/data';
-import { CartItemWithProduct } from '@/app/lib/definitions';
 import { useGetCartItems, useRemoveCartItem, useUpdateCartItem } from '@/app/lib/react-query/queriesAndMutations';
 import { Tables } from '@/app/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Add, ShoppingBag, Remove, Delete } from '@mui/icons-material'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 const CartPage = () => {
     const rowsPerPage = 10;

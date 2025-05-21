@@ -1,10 +1,7 @@
 // 'use client';
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { IUserInformation, SignupFormSchema } from '@/app/lib/definitions'
+import { SignupFormSchema } from '@/app/lib/definitions'
 import { z } from 'zod'
-import { encodedRedirect } from '@/utils/utils'
 import { Tables } from '@/app/lib/supabase'
 
 export async function createAccount(formData: z.infer<typeof SignupFormSchema>): Promise<Tables<'user_informations'>> {

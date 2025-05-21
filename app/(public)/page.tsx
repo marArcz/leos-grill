@@ -1,14 +1,10 @@
 'use client';
 
-import Image from "next/image";
-import Navbar from "../ui/Navbar";
 import Link from "next/link";
 import { jotiOne } from "../ui/fonts";
 import { Facebook, Instagram, Map as MapIcon, Phone } from "@mui/icons-material";
 import { fetchBestSellers } from "../lib/data";
 import ProductComponent from "./components/ProductComponent";
-import { useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
 import { useGetCategories } from "../lib/react-query/queriesAndMutations";
 import { useGetSession } from "@/hooks/use-get-session";
 

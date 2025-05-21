@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Tables } from "./supabase";
-import { Session, User } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 
 export interface ICategory {
     id: string,

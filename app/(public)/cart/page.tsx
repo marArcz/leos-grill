@@ -1,16 +1,14 @@
 "use client";
 
-import { fetchCart } from '@/app/lib/data';
-import { CartItemWithProduct } from '@/app/lib/definitions';
 import { useGetCartItems, useRemoveCartItem, useUpdateCartItem } from '@/app/lib/react-query/queriesAndMutations';
 import { Tables } from '@/app/lib/supabase';
 import { formatToCurrency } from '@/app/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useGetSession } from '@/hooks/use-get-session';
 import { toast } from '@/hooks/use-toast';
-import { Add, ShoppingBag, Remove, Delete, Close } from '@mui/icons-material'
+import { Add, ShoppingBag, Remove, Close } from '@mui/icons-material'
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 const CartPage = () => {
     const rowsPerPage = 10;
@@ -23,7 +21,7 @@ const CartPage = () => {
     const getTotal = () => {
         if (cartItems) {
             let total = 0;
-            for (let item of cartItems) {
+            for (const item of cartItems) {
                 total += (item.product?.price ?? 0) * (item.quantity ?? 0)
             }
             return total;

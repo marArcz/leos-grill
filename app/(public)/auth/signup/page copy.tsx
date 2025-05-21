@@ -8,17 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 const SignUpPage = () => {
 
-    const form = useForm<z.infer<typeof SignupFormSchema>>({
-        resolver: zodResolver(SignupFormSchema),
-        defaultValues:{
-            firstname:'',
-            lastname:'',
-            email:'',
-            phone:'',
-            password:'',
-            confirmPassword:''
-        }
-    })
 
     return (
         <section className="wrapper py-10">

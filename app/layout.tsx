@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { StyledEngineProvider } from "@mui/material";
 import { jost } from "./ui/fonts";
-import theme from "./lib/theme";
-import { ThemeProvider } from '@mui/material/styles'
 import { QueryProvider } from "./lib/react-query/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 

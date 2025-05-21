@@ -2,7 +2,7 @@
 import React from "react";
 import { Dashboard, Group, Settings, ExitToApp, Inventory as ProductsIcon, Category as CategoriesIcon, PlaylistAddCheck as OrdersIcon } from "@mui/icons-material";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const AdminSidebar: React.FC = () => {

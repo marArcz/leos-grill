@@ -1,13 +1,10 @@
 'use client'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Session } from '@supabase/supabase-js';
 
-import React, { useState } from 'react'
-import Link from 'next/link';
-import { ShoppingBag, Menu } from '@mui/icons-material';
+import React from 'react'
+import { Menu } from '@mui/icons-material';
 import { useGetSession } from '@/hooks/use-get-session';
-import { Button } from '@/components/ui/button';
 
 const AdminNavbar = () => {
     const userSession = useGetSession();

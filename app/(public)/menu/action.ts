@@ -1,4 +1,4 @@
-import { IAddToCart, ICartItem } from "@/app/lib/definitions"
+import { IAddToCart } from "@/app/lib/definitions"
 import { useAddCartItem, useGetCartItem, useUpdateCartItem } from "@/app/lib/react-query/queriesAndMutations";
 import { createClient } from "@/utils/supabase/client"
 

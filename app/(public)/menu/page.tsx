@@ -1,13 +1,9 @@
 "use client";
 
 // import { categories } from '@/app/lib/dummy-data';
-import clsx from 'clsx';
 import React, { useEffect, useState } from 'react'
 import Categories from './components/Categories';
 import { koulen } from '@/app/ui/fonts';
-import ProductComponent from './components/ProductComponent';
-import { fetchCategories, fetchProducts } from '@/app/lib/data';
-import { ICategory, IProduct } from '@/app/lib/definitions';
 import { Tables } from '@/app/lib/supabase';
 import CategoriesPlaceholder from './components/CategoriesPlaceholder';
 import { useGetCategories } from '@/app/lib/react-query/queriesAndMutations';

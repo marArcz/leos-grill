@@ -30,9 +30,7 @@ const SignInPage = () => {
     const onSubmit = async (data: z.infer<typeof SigninFormSchema>) => {
         setIsSigningIn(true);
         signin(data)
-            .then((res) => {
-                router.push('/')
-            })
+            .then()
             .catch((err) => {
                 toast({
                     title: "Uh oh! Something went wrong.",

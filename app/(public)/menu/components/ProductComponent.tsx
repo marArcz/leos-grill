@@ -1,11 +1,9 @@
 'use client'
-import { IProduct } from '@/app/lib/definitions'
 import { formatToCurrency } from '@/app/lib/utils'
 import { Add } from '@mui/icons-material'
-import React, { use, useState } from 'react'
-import { addTocart } from '../action'
+import React, { useState } from 'react'
 import { useGetSession } from '@/hooks/use-get-session'
-import { toast, useToast } from '@/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { Tables } from '@/app/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useAddCartItem, useGetCartItem, useUpdateCartItem } from "@/app/lib/react-query/queriesAndMutations";
@@ -27,7 +25,7 @@ const ProductComponent = ({ product }: Props) => {
 
     const handleAddToCart = async () => {
         if (userSession) {
-            let cartItem = {
+            const cartItem = {
                 product_id: product.id,
                 quantity: 1,
                 user_id: userSession.user.id

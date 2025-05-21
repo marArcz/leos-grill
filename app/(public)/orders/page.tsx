@@ -1,12 +1,11 @@
 'use client';
 
 import { useGetOrders } from '@/app/lib/react-query/queriesAndMutations';
-import { Tables } from '@/app/lib/supabase';
 import { formatToCurrency } from '@/app/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useGetSession } from '@/hooks/use-get-session';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 const OrdersPage = () => {
     const userSession = useGetSession();

@@ -1,7 +1,6 @@
 import { getUserInformation } from '@/app/lib/data'
 import { IUserSession } from '@/app/lib/definitions'
 import { createClient } from '@/utils/supabase/client'
-import { Session, User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 
 export const useGetSession = () => {

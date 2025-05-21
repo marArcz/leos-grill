@@ -1,7 +1,7 @@
 'use client';
 
 import { UpdateCategoryFormSchema } from '@/app/lib/definitions';
-import { useGetCategories, useGetCategory, useUpdateCategory } from '@/app/lib/react-query/queriesAndMutations'
+import { useGetCategory, useUpdateCategory } from '@/app/lib/react-query/queriesAndMutations'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';

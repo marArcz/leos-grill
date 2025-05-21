@@ -3,13 +3,12 @@ import React, { useState } from 'react'
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { useDeleteProduct, useGetAllProducts, useGetProducts, useUpdateProduct } from '@/app/lib/react-query/queriesAndMutations'
+import { useDeleteProduct, useGetAllProducts } from '@/app/lib/react-query/queriesAndMutations'
 import { formatToCurrency } from '@/app/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

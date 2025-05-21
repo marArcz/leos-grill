@@ -1,6 +1,6 @@
 'use client';
 
-import { IOrderListFilter, IOrderStatus } from '@/app/lib/definitions';
+import { IOrderListFilter } from '@/app/lib/definitions';
 import { useGetAllOrders } from '@/app/lib/react-query/queriesAndMutations';
 import React, { useState } from 'react'
 

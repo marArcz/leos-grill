@@ -1,24 +1,13 @@
 'use client';
-import { createClient } from '@/utils/supabase/client'
-import { User } from '@supabase/supabase-js';
-import React, { useEffect, useState } from 'react'
-import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon, KeyboardArrowDown } from '@mui/icons-material'
+import React, { useState } from 'react'
+import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon } from '@mui/icons-material'
 import { formatToCurrency } from '@/app/lib/utils';
 import { useGetSession } from '@/hooks/use-get-session';
-import { IOrderListFilter, orderStatusList, orderStatusObj, OrderWithOrderItems } from '@/app/lib/definitions';
-import { useGetActiveOrders, useGetAllOrders, useGetOutForDeliveries, useUpdateOrder } from '@/app/lib/react-query/queriesAndMutations';
+import { IOrderListFilter, orderStatusList, OrderWithOrderItems } from '@/app/lib/definitions';
+import { useGetActiveOrders, useGetOutForDeliveries, useUpdateOrder } from '@/app/lib/react-query/queriesAndMutations';
 import clsx from 'clsx';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tables } from '@/app/lib/supabase';
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 
 const Dashboard = () => {

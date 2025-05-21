@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { QUERY_KEYS } from "./queryKeys"
 import { addCartItem, addCategory, addDeliveryInformation, addProduct, createOrder, deleteCategory, deleteProduct, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getActiveOrders, getAllOrders, getCategory, getOrders, getOutForDeliveries, getProductById, removeCartItem, updateCartItem, updateCategory, updateOrder, updateProduct, uploadImage } from "../data"
-import { AddCategoryFormSchema, AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder, IOrderListFilter, IOrderStatus, UpdateCategoryFormSchema, UpdateProductFormSchema } from '../definitions'
+import { AddCategoryFormSchema, AddProductFormSchema, DeliveryInformationSchema, IAddToCart, IOrder, IOrderListFilter, UpdateCategoryFormSchema, UpdateProductFormSchema } from '../definitions'
 import { Tables } from "../supabase"
 import { z } from "zod"
 

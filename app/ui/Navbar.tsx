@@ -1,8 +1,6 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { jotiOne } from './fonts'
+import React from 'react'
 import Link from 'next/link'
-import { Button } from "@/components/ui/button"
 import clsx from 'clsx'
 import { Search, ShoppingBag } from '@mui/icons-material'
 import { createClient } from '@/utils/supabase/client'
@@ -15,7 +13,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Session, User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { useGetAllCartItems } from '../lib/react-query/queriesAndMutations'
 import { useGetSession } from '@/hooks/use-get-session'

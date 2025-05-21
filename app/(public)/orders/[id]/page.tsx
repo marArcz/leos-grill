@@ -1,6 +1,5 @@
 'use client'
 import { useGetOrderDetails } from '@/app/lib/react-query/queriesAndMutations';
-import { useSearchParams } from 'next/navigation'
 import React from 'react'
 import { formatDate } from 'date-fns'
 import { formatToCurrency } from '@/app/lib/utils';

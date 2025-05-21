@@ -1,10 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { SignupFormSchema } from '@/app/lib/definitions'
-import { z } from 'zod'
 import { encodedRedirect } from '@/utils/utils'
 
 export async function createAccount(data: FormData) {

@@ -1,5 +1,5 @@
 'use client';
-import { AddCategoryFormSchema, UpdateCategoryFormSchema } from '@/app/lib/definitions';
+import { AddCategoryFormSchema } from '@/app/lib/definitions';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';

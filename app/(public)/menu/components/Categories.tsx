@@ -1,7 +1,5 @@
 "use client";
 
-import { fetchCategories } from '@/app/lib/data'
-import { ICategory } from '@/app/lib/definitions'
 import { Tables } from '@/app/lib/supabase';
 import clsx from 'clsx';
 import React from 'react'

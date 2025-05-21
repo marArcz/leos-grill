@@ -1,26 +1,18 @@
 'use client';
 import { SigninFormSchema } from '@/app/lib/definitions';
-import { jotiOne, koulen } from '@/app/ui/fonts';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { koulen } from '@/app/ui/fonts';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { createClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Search, ShoppingBag } from '@mui/icons-material'
 import { Session } from '@supabase/supabase-js';  
-import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import AdminNavbar from '../../ui/AdminNavbar';
 import { useToast } from '@/hooks/use-toast';
-import lottieJson from '@/public/animations/fire.json';
-import Lottie from 'react-lottie-player'
 import { signin } from './action';
 
 const SignInPage = () => {
