@@ -1,8 +1,8 @@
 // 'use client';
-import { createClient } from '@/utils/supabase/client'
-import { SignupFormSchema } from '@/app/lib/definitions'
-import { z } from 'zod'
-import { Tables } from '@/app/lib/supabase'
+import { createClient } from '@/utils/supabase/client';
+import { SignupFormSchema } from '@/app/lib/definitions';
+import { z } from 'zod';
+import { Tables } from '@/app/lib/supabase';
 
 export async function createAccount(formData: z.infer<typeof SignupFormSchema>): Promise<Tables<'user_informations'>> {
     console.log('creating account');
@@ -21,6 +21,7 @@ export async function createAccount(formData: z.infer<typeof SignupFormSchema>):
     })
 
     if (error) {
+        console.log('error signing up: ', error)
         throw error;
     } else {
         //save info
@@ -31,12 +32,15 @@ export async function createAccount(formData: z.infer<typeof SignupFormSchema>):
                     firstname: formData.firstname,
                     lastname: formData.lastname,
                     photo: '',
-                    account_id: userAccount.user?.id
+                    account_id: userAccount.user.id,
+                    created_at:(new Date()).toDateString(),
+                    role:'customer',
                 })
                 .select()
                 .single()
-
+            console.log('info data: ', data)
             if (error) {
+                console.log('error inserting user info: ', error)
                 throw error;
             }
             return data;
