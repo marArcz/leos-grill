@@ -4,7 +4,7 @@ import { SigninFormSchema } from '@/app/lib/definitions'
 import { koulen } from '@/app/ui/fonts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { signin } from './action'
@@ -30,7 +30,9 @@ const SignInPage = () => {
     const onSubmit = async (data: z.infer<typeof SigninFormSchema>) => {
         setIsSigningIn(true);
         signin(data)
-            .then()
+            .then(() => {
+                router.push('/')
+            })
             .catch((err) => {
                 toast({
                     title: "Uh oh! Something went wrong.",
