@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react'
 import { AttachMoney as MoneyIcon, AssignmentInd as OrdersIcon, KeyboardArrowDown } from '@mui/icons-material'
 import { formatToCurrency } from '@/app/lib/utils';
 import { useGetSession } from '@/hooks/use-get-session';
-import { IOrderListFilter, orderStatusList } from '@/app/lib/definitions';
-import { useGetAllOrders } from '@/app/lib/react-query/queriesAndMutations';
+import { IOrderListFilter, orderStatusList, orderStatusObj, OrderWithOrderItems } from '@/app/lib/definitions';
+import { useGetActiveOrders, useGetAllOrders, useGetOutForDeliveries, useUpdateOrder } from '@/app/lib/react-query/queriesAndMutations';
 import clsx from 'clsx';
 import {
     DropdownMenu,
@@ -17,17 +17,44 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tables } from '@/app/lib/supabase';
+import { toast } from '@/hooks/use-toast';
+
 const Dashboard = () => {
     const supabase = createClient();
     const [page, setPage] = useState(1)
+    const { mutateAsync: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
     const [filters, setFilters] = useState<IOrderListFilter>({})
-    const { data: orders, isPending: isFetchingOrders } = useGetAllOrders(filters);
+    const { data: orders, isPending: isFetchingOrders, refetch: refetchActiveOrders } = useGetActiveOrders();
+    const { data: outForDeliveries, isPending: isFetchingOutForDeliveries, refetch: refetchOutForDeliveries } = useGetOutForDeliveries();
     const todaysRevenue = 2383;
     const todaysOrders = 240;
     const session = useGetSession();
 
+    const updateOrderStatus = async (order: OrderWithOrderItems, status: string) => {
 
+        try {
+            const { order_items, delivery_informations, user_informations, ...orderDetails } = order
+            console.log('updating order: ', orderDetails)
+            const data = await updateOrder({
+                ...orderDetails,
+                status
+            })
+
+            refetchActiveOrders()
+            refetchOutForDeliveries()
+
+            toast({
+                title: 'Successfully updated'
+            })
+        } catch (error) {
+            toast({
+                title: 'error'
+            })
+            console.error('Error updating order status: ', error)
+        }
+    }
 
     return (
         <div className='p-2'>
@@ -77,15 +104,23 @@ const Dashboard = () => {
                                 <div className="mx-auto text-center">
                                     <Dialog>
                                         <DialogTrigger className='' asChild>
-                                            <button type='button' className='bg-orange px-3 rounded-full'>{order.status}</button>
+                                            <button type='button' className={clsx(
+                                                'bg-orange px-3 rounded-full',
+                                                {
+                                                    'bg-muted': isUpdatingOrder
+                                                })}>{order.status}</button>
                                         </DialogTrigger>
                                         <DialogContent>
                                             <DialogHeader>
                                                 <DialogTitle className=''>Update Status</DialogTitle>
                                             </DialogHeader>
-                                            <div className="mt-3">
+                                            <div className="mt-3 space-y-5">
                                                 {orderStatusList.map((orderStatus, index) => (
-                                                    <Button key={index} type='button' variant="ghost">{orderStatus}</Button>
+                                                    <DialogClose asChild>
+                                                        <Button onClick={() => updateOrderStatus(order, orderStatus)} key={index} type='button' className={clsx('block w-full', {
+                                                            'bg-orange': orderStatus.toLowerCase() == order.status?.toLowerCase(),
+                                                        })} variant="ghost">{orderStatus}</Button>
+                                                    </DialogClose>
                                                 ))}
                                             </div>
                                         </DialogContent>
@@ -136,6 +171,77 @@ const Dashboard = () => {
                     </div>
                     <div className="w-1/4">
                         <p className='text-yellow mb-3 text-lg'>Out for delivery</p>
+                        {outForDeliveries && outForDeliveries.map((order, index) => (
+                            <div key={order.id} className={clsx("mb-3 rounded-2xl  border p-3", {
+                                'bg-zinc-800': index == 0,
+                            })}>
+                                <div className="mx-auto text-center">
+                                    <Dialog>
+                                        <DialogTrigger className='' asChild>
+                                            <button type='button' className={clsx(
+                                                'bg-orange px-3 rounded-full',
+                                                {
+                                                    'bg-muted': isUpdatingOrder
+                                                })}>{order.status}</button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle className=''>Update Status</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="mt-3 space-y-5">
+                                                {orderStatusList.map((orderStatus, index) => (
+                                                    <DialogClose asChild>
+                                                        <Button onClick={() => updateOrderStatus(order, orderStatus)} key={index} type='button' className={clsx('block w-full', {
+                                                            'bg-orange': orderStatus.toLowerCase() == order.status?.toLowerCase(),
+                                                        })} variant="ghost">{orderStatus}</Button>
+                                                    </DialogClose>
+                                                ))}
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                                <div className="flex gap-3 w-full ">
+                                    <img src={order.user_informations?.photo || '/images/profile-pic.jpg'} alt="" className='rounded-full size-10 object-cover' />
+                                    <div className='mt-2 flex-1'>
+                                        <p>{order.user_informations?.firstname + ' ' + order.user_informations?.lastname}</p>
+                                        <div className="mt-3">
+                                            <div className="bg-zinc-900 rounded-lg p-4 w-full">
+                                                <p className='text-zinc-400 text-sm'>Order details</p>
+                                                <p className='text-sm text-yellow'>#{order.order_number}</p>
+                                                <div className="mt-2">
+                                                    {order.order_items && order.order_items.map((orderItem) => (
+                                                        <div key={orderItem.id} className='grid grid-cols-3 justify-between items-center'>
+                                                            <div>
+                                                                <p>{orderItem.product_name} <span className='text-orange'>x {orderItem.quantity}</span></p>
+                                                            </div>
+                                                            <div className=''>
+                                                                {/* <div className='border-white border-dotted border-2 p-0'></div> */}
+                                                                <hr className='border-dotted border-collapse border-4' />
+                                                            </div>
+                                                            <p className='text-end'>
+                                                                {formatToCurrency(orderItem.product_price ?? 0)}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="mt-2">
+                                                    <p className='text-orange'>Total: {formatToCurrency(order.total ?? 0)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-2">
+                                                {order.delivery_informations && (
+                                                    <>
+
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        ))}
                     </div>
                 </div>
                 {(!orders || orders.length == 0) && (

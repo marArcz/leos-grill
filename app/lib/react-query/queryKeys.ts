@@ -16,6 +16,8 @@ export enum QUERY_KEYS {
     GET_CATEGORIES = 'getCategories',
     
     GET_ORDERS = 'getOrders',
+    GET_ACTIVE_ORDERS = 'getActiveOrders',
+  GET_OUT_FOR_DELIVERIES = 'getOutForDeliveries',
     GET_ALL_ORDERS = 'getAllOrders',
     GET_ORDER_DETAILS = 'getOrderDetails',
     GET_PRODUCTS = 'getProducts',

@@ -252,13 +252,14 @@ export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> |
     throw new Error('No cart items found')
 }
 
-export const getOrders = async (userId: string): Promise<Tables<'orders'>[] | null> => {
+export const getOrders = async (userId: string): Promise<OrderWithOrderItems[] | null> => {
     const supabase = createClient();
-    const { data, error } = await supabase.from('orders').select('*')
-        .eq('user_id', userId);
+    const { data, error } = await supabase.from('orders')
+        .select('*, order_items(*), user_informations(*), delivery_informations(*)')
+        .eq('account_id', userId);
 
     if (error) {
-        console.error(error);
+        console.log('error in getting orders: ', error);
         throw error;
     }
 
@@ -427,10 +428,13 @@ export const getAllOrders = async (filters: IOrderListFilter): Promise<OrderWith
 export const getActiveOrders = async (): Promise<OrderWithOrderItems[] | null> => {
     const supabase = createClient();
     const { data, error } = await supabase.from('orders')
-        .select()
+        .select('*, order_items(*), user_informations(*), delivery_informations(*)')
         .neq('status', orderStatusObj.OUT_FOR_DELIVERY)
         .neq('status', orderStatusObj.CANCELLED)
         .neq('status', orderStatusObj.DELIVERED)
+        .order('ordered_at',{
+            ascending:false
+        })
         .returns<OrderWithOrderItems[]>()
     if (error) {
         throw error;
@@ -442,9 +446,10 @@ export const getActiveOrders = async (): Promise<OrderWithOrderItems[] | null> =
 export const getOutForDeliveries = async (): Promise<OrderWithOrderItems[] | null> => {
     const supabase = createClient();
     const { data, error } = await supabase.from('orders')
-        .select()
+        .select('*, order_items(*), user_informations(*), delivery_informations(*)')
         .eq('status', orderStatusObj.OUT_FOR_DELIVERY)
         .returns<OrderWithOrderItems[]>()
+        
     if (error) {
         throw error;
     }
@@ -468,16 +473,22 @@ export const getUserInformation = async (accountId: string): Promise<Tables<'use
 
 export const updateOrder = async (orderData: Tables<'orders'>): Promise<Tables<'orders'>> => {
     const supabase = createClient();
-    const { id, ...orderDetails } = orderData
+    const { id, ...orderDetails } = orderData;
+    
+    if (typeof id === "undefined" || id === null) {
+        throw new Error("Order id is required for update.");
+    }
+    console.log('updatingggg')
     const { data, error } = await supabase.from('orders')
         .update(orderDetails)
         .eq('id', id)
-        .select()
-        .single()
-
+        .select('*')
+        .single();
+        
     if (error) {
         throw error;
     }
+    console.log('updated order: ', data)
 
     return data;
 }

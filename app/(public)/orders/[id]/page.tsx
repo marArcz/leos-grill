@@ -5,12 +5,44 @@ import React from 'react'
 import { formatDate } from 'date-fns'
 import { formatToCurrency } from '@/app/lib/utils';
 import Link from 'next/link';
+import { useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { toast } from '@/hooks/use-toast';
 
 const OrderDetails = ({ params }: { params: { id: string } }) => {
 
-    const { data: orderDetails, isPending: fetchingOrderDetails } = useGetOrderDetails(params.id);
+    const { data: orderDetails, isPending: fetchingOrderDetails, refetch } = useGetOrderDetails(params.id);
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
 
-    console.log('order details: ', orderDetails)
+    useEffect(() => {
+        const channel = supabase
+            .channel('order-details')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'orders',
+                    filter: `id=eq.${params.id}`,
+                },
+                () => {
+        toast({title:'refetch'})
+
+                    // Refetch order details when any change occurs
+                    // @ts-ignore
+                    refetch()
+                }
+            )
+            .subscribe()
+
+        return () => {
+            channel.unsubscribe()
+        }
+    }, [params.id])
+
     return (
         <div className='wrapper pt-5'>
             <ul className="flex gap-1">
@@ -29,7 +61,7 @@ const OrderDetails = ({ params }: { params: { id: string } }) => {
                     <p>Fetching order details...</p>
                 ) : (
                     <>
-                        <p className=' mt-3'>Your order has been placed on {formatDate(new Date(orderDetails?.ordered_at ?? ''), 'MMMM dd, yyyy')} and is currently <span className='text-orange'>{orderDetails?.status}.</span></p>
+                        <p className=' mt-3'>Your order has been placed on {formatDate(new Date(orderDetails?.ordered_at ?? ''), 'MMMM dd, yyyy')} with status: <span className='text-orange'>{orderDetails?.status}.</span></p>
                         <div className="mt-3 border rounded-md p-4">
                             <p className="text-sm text-stone-500">Products</p>
                             {orderDetails?.order_items && orderDetails.order_items.map((orderItem, index) => (

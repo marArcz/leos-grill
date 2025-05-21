@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { QUERY_KEYS } from "./queryKeys"
-import { addCartItem, addCategory, addDeliveryInformation, addProduct, createOrder, deleteCategory, deleteProduct, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getAllOrders, getCategory, getOrders, getProductById, removeCartItem, updateCartItem, updateCategory, updateOrder, updateProduct, uploadImage } from "../data"
+import { addCartItem, addCategory, addDeliveryInformation, addProduct, createOrder, deleteCategory, deleteProduct, fetchAllCart, fetchAllProducts, fetchCart, fetchCartItem, fetchCategories, fetchDeliveryInformations, fetchOrderDetails, fetchProducts, getActiveOrders, getAllOrders, getCategory, getOrders, getOutForDeliveries, getProductById, removeCartItem, updateCartItem, updateCategory, updateOrder, updateProduct, uploadImage } from "../data"
 import { AddCategoryFormSchema, AddProductFormSchema, DeliveryInformationSchema, IAddProduct, IAddToCart, ICartItem, IOrder, IOrderListFilter, IOrderStatus, UpdateCategoryFormSchema, UpdateProductFormSchema } from '../definitions'
 import { Tables } from "../supabase"
 import { z } from "zod"
@@ -176,6 +176,18 @@ export const useGetAllOrders = (filters: IOrderListFilter) => {
         queryFn: () => getAllOrders(filters)
     })
 }
+export const useGetActiveOrders = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_ACTIVE_ORDERS],
+        queryFn: () => getActiveOrders()
+    })
+}
+export const useGetOutForDeliveries = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_OUT_FOR_DELIVERIES],
+        queryFn: () => getOutForDeliveries()
+    })
+}
 
 export const useUploadImage = () => {
     const queryClient = useQueryClient();
@@ -246,7 +258,7 @@ export const useUpdateOrder = () => {
         mutationFn:(orderData:Tables<'orders'>) => updateOrder(orderData),
         onSuccess:(data) => {
             queryClient.invalidateQueries({
-                queryKey:[QUERY_KEYS.GET_ORDERS, QUERY_KEYS.GET_ORDER_DETAILS]
+                queryKey:[QUERY_KEYS.GET_ORDERS, QUERY_KEYS.GET_ORDER_DETAILS, QUERY_KEYS.GET_ALL_ORDERS, QUERY_KEYS.GET_ACTIVE_ORDERS, QUERY_KEYS.GET_OUT_FOR_DELIVERIES]
             })
         }
     })

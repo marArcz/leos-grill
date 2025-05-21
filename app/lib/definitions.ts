@@ -178,7 +178,7 @@ export const UpdateCategoryFormSchema = z.object({
     image: z.string(),
 })
 
-export type IOrderStatus = 'Placed' | 'Preparing' | 'Out for delivery' | 'Delivered' | 'Cancelled';
+export type IOrderStatus = 'Pending' | 'Preparing' | 'Out for delivery' | 'Delivered' | 'Cancelled';
 
 export type IOrderListFilter = {
     status?: IOrderStatus,
@@ -186,9 +186,9 @@ export type IOrderListFilter = {
     is_cancelled?: boolean
 }
 
-export const orderStatusList = ['Placed', 'Preparing', 'Out for delivery', 'Delivered', 'Cancelled'];
+export const orderStatusList = ['Pending', 'Preparing', 'Out for delivery', 'Delivered', 'Cancelled'];
 export const orderStatusObj = {
-    PLACED:'Placed',
+    PENDING:'Pending',
     PREPARING:'Preparing',
     OUT_FOR_DELIVERY:'Out for delivery',
     DELIVERED:'Delivered',
