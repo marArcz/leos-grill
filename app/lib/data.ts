@@ -244,8 +244,12 @@ export const createOrder = async (orderData: IOrder): Promise<Tables<'orders'> |
         }
 
         if (order.account_id) {
+            console.log('deleting cart items')
             await supabase.from('cart_items').delete()
                 .eq('user_id', order.account_id)
+        }else{
+            console.log('no account id')
+
         }
         return order;
     }

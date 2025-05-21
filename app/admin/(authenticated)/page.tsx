@@ -22,7 +22,6 @@ import { Tables } from '@/app/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
-    const supabase = createClient();
     const [page, setPage] = useState(1)
     const { mutateAsync: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
     const [filters, setFilters] = useState<IOrderListFilter>({})
@@ -56,6 +55,30 @@ const Dashboard = () => {
         }
     }
 
+    // useEffect(() => {
+    //         const channel = supabase
+    //             .channel('order-details')
+    //             .on(
+    //                 'postgres_changes',
+    //                 {
+    //                     event: 'insert',
+    //                     schema: 'public',
+    //                     table: 'orders',
+    //                 },
+    //                 () => {
+    //         toast({title:'refetch'})
+    
+    //                     // Refetch order details when any change occurs
+    //                     // @ts-ignore
+    //                     refetch()
+    //                 }
+    //             )
+    //             .subscribe()
+    
+    //         return () => {
+    //             channel.unsubscribe()
+    //         }
+    //     }, [])
     return (
         <div className='p-2'>
             <div className="text-center mt-3">

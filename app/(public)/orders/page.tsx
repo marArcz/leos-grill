@@ -32,8 +32,13 @@ const OrdersPage = () => {
                                 </div>
                                 <div className="mt-3">
                                     <div className="bg-zinc-900 rounded-lg p-4 w-full">
-                                        <p className='text-zinc-400 text-sm'>Order details</p>
-                                        <p className='text-sm text-yellow'>#{order.order_number}</p>
+                                        <div className="flex">
+                                            <div>
+                                                <p className='text-zinc-400 text-sm'>Order details</p>
+                                                <p className='text-sm text-yellow'>#{order.order_number}</p>
+                                            </div>
+                                            <div className="ms-auto text-yellow">{order.status}</div>
+                                        </div>
                                         <div className="mt-2">
                                             {order.order_items && order.order_items.map((orderItem) => (
                                                 <div key={orderItem.id} className='grid grid-cols-3 justify-between items-center'>

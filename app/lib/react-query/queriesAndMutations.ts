@@ -144,7 +144,7 @@ export const useCreateDeliveryInfo = () => {
 
 export const useGetOrderDetails = (orderId: string | null) => {
     return useQuery({
-        queryKey: [QUERY_KEYS.GET_ORDER_DETAILS, orderId],
+        queryKey: [QUERY_KEYS.GET_ORDER_DETAILS],
         queryFn: () => orderId ? fetchOrderDetails(orderId) : null,
         enabled: !!orderId
     })

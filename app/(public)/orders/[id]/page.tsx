@@ -6,30 +6,28 @@ import { formatDate } from 'date-fns'
 import { formatToCurrency } from '@/app/lib/utils';
 import Link from 'next/link';
 import { useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import { toast } from '@/hooks/use-toast';
+import { createClient } from '@/utils/supabase/client';
+
+const supabase = createClient()
 
 const OrderDetails = ({ params }: { params: { id: string } }) => {
 
     const { data: orderDetails, isPending: fetchingOrderDetails, refetch } = useGetOrderDetails(params.id);
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
 
     useEffect(() => {
         const channel = supabase
             .channel('order-details')
             .on(
-                'postgres_changes',
+                'system',
                 {
                     event: '*',
                     schema: 'public',
                     table: 'orders',
-                    filter: `id=eq.${params.id}`,
+                    filters: 'id=eq.' + params.id
                 },
                 () => {
-        toast({title:'refetch'})
+                    toast({ title: 'Your order\'s status has been updated!' })
 
                     // Refetch order details when any change occurs
                     // @ts-ignore
