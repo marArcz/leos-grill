@@ -284,13 +284,6 @@ export type Database = {
             referencedRelation: "delivery_informations"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "orders_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_informations"
-            referencedColumns: ["id"]
-          },
         ]
       }
       product_images: {

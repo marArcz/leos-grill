@@ -1,5 +1,5 @@
 import { products } from "./dummy-data";
-import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddToCart, IOrder, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderListFilter, orderStatusObj } from "./definitions";
+import { AddProductFormSchema, UpdateProductFormSchema, CartItemWithProduct, DeliveryInformationSchema, IAddToCart, IOrder, OrderWithOrderItems, ProductWithCategory, AddCategoryFormSchema, UpdateCategoryFormSchema, IOrderListFilter, orderStatusObj, SignupFormSchema } from "./definitions";
 import { createClient } from "@/utils/supabase/client";
 import { Tables } from "./supabase";
 import { z } from "zod";
@@ -495,4 +495,50 @@ export const updateOrder = async (orderData: Tables<'orders'>): Promise<Tables<'
     console.log('updated order: ', data)
 
     return data;
+}
+
+export const signup = async(formData:z.infer<typeof SignupFormSchema>):Promise<Tables<'user_informations'> | null> => {
+ const supabase = createClient()
+    const { data: userAccount, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+            data: {
+                role: 'customer',
+                firstname: formData.firstname,
+                lastname: formData.lastname,
+                phone: formData.phone,
+            }
+        }
+    })
+
+    if (error) {
+        console.log('error signing up: ', error)
+        await supabase.auth.signOut()
+        throw error;
+    } else {
+        //save info
+        if (userAccount.user) {
+            console.log('signing up')
+            const { data, error } = await supabase
+                .from('user_informations')
+                .insert({
+                    firstname: formData.firstname,
+                    lastname: formData.lastname,
+                    photo: '',
+                    account_id: userAccount.user.id,
+                    created_at: new Date().toISOString(),
+                    role: 'customer',
+                })
+                .select()
+
+            console.log('info data: ', data)
+            if (error) {
+                console.log('error inserting user info: ', error)
+                throw error;
+            }
+            return data?.[0] ?? null;
+        }
+        throw new Error('Cannot store user information')
+    }
 }

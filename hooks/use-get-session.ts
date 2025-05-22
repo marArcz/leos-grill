@@ -6,19 +6,24 @@ import { useEffect, useState } from 'react'
 export const useGetSession = () => {
     const [session, setSession] = useState<IUserSession | null>(null)
     const supabase = createClient()
-    
+
     useEffect(() => {
         // Check initial session
         const getSession = async () => {
             const { data: { session }, error } = await supabase.auth.getSession()
             console.log('use-get-session:', error)
             if (session?.user) {
-                const user_information = await getUserInformation(session.user.id)
-                console.log('user info: ', user_information)
-                setSession({
-                    ...session,
-                    user_information
-                })
+                try {
+                    const user_information = await getUserInformation(session.user.id)
+                    console.log('user info: ', user_information)
+                    setSession({
+                        ...session,
+                        user_information
+                    })
+                } catch (error) {
+                    console.log("error fetching userinfo from getsesion hook: ", error);
+                    await supabase.auth.signOut();
+                }
             } else {
                 setSession(session)
             }
@@ -27,16 +32,19 @@ export const useGetSession = () => {
         // Listen for auth state changes
         const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log("Auth event:", event)  // Optional: log auth events (SIGNED_IN, SIGNED_OUT, etc.)
-            if (session?.user) {
-                const user_information = await getUserInformation(session.user.id)
-                console.log('user info: ', user_information)
-                setSession({
-                    ...session,
-                    user_information
-                })
-            } else {
-                setSession(session)
+            if (event == 'SIGNED_OUT' || event == 'SIGNED_IN') {
+                if (session?.user) {
+                    const user_information = await getUserInformation(session.user.id)
+                    console.log('user info: ', user_information)
+                    setSession({
+                        ...session,
+                        user_information
+                    })
+                } else {
+                    setSession(session)
+                }
             }
+
         })
 
         // Cleanup on unmount

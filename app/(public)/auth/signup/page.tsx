@@ -2,7 +2,7 @@
 import { SignupFormSchema } from '@/app/lib/definitions'
 import { koulen } from '@/app/ui/fonts'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -18,13 +18,14 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { createAccount } from './action'
 import { AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { Info } from '@mui/icons-material'
+import { signup } from '@/app/lib/data'
 
 const SignUpPage = () => {
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+    // const {} = useSignup();
     const [error, setError] = useState<AuthError | null>(null)
     const router = useRouter();
 
@@ -43,10 +44,15 @@ const SignUpPage = () => {
     const onSubmit = async (data: z.infer<typeof SignupFormSchema>) => {
         try {
             setIsCreatingAccount(true)
-            await createAccount(data)
-            setIsCreatingAccount(false)
-            router.push('/');
+            const user = await signup(data)
+            if (!user) {
+                throw new Error("No user created")
+            } else {
+                setIsCreatingAccount(false)
+                router.push('/');
+            }
         } catch (error) {
+            console.log('Error in signing up: ', error)
             setError(error as AuthError);
             setIsCreatingAccount(false)
         }
