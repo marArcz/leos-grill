@@ -19,7 +19,7 @@ export async function createAccount(formData: z.infer<typeof SignupFormSchema>):
             }
         }
     })
-
+    console.log('created user: ', userAccount)
     if (error) {
         throw error;
     } else {
