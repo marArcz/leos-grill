@@ -6,9 +6,9 @@ import { formatToCurrency } from '@/app/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useGetSession } from '@/hooks/use-get-session';
 import { toast } from '@/hooks/use-toast';
-import { Add, ShoppingBag, Remove, Close } from '@mui/icons-material'
+import { Add, ShoppingBag, Remove, Close } from '@mui/icons-material';
 import Link from 'next/link';
-import React, { useState } from 'react'
+import { useState } from 'react';
 
 const CartPage = () => {
     const rowsPerPage = 10;

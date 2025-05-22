@@ -1,6 +1,6 @@
-import { createClient } from "@/utils/supabase/client"
+import { createClient } from "@/utils/supabase/client";
 
-export const updateQuantity = async (id:string, quantity:number) => {
+export const updateQuantity = async (id:number, quantity:number) => {
     const supabase = createClient()
 
     const {data, error} = await supabase.from('cart_items').update({
